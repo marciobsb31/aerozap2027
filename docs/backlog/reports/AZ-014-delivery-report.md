@@ -6,7 +6,7 @@ Agent: A1 (Backend)
 
 Branch / PR: `feature/AZ-014-esqueleto-java`
 
-Status: READY_FOR_REVIEW (build e testes verificados; execução contra o Compose pendente)
+Status: READY_FOR_REVIEW (build, testes e execução contra o Compose verificados em 03/11/2026)
 
 ## Implementado
 - POM pai (Spring Boot 4.1.2, Java 21) e três módulos: `event-contracts`, `service-foundation`, `platform-core`.
@@ -35,16 +35,17 @@ Total: 18 testes, 0 falhas.
 bash scripts/build.sh               # compila e testa tudo (Docker em execução)
 bash scripts/dev-service-check.sh   # sobe a infraestrutura e o serviço e confere o health
 ```
-O ambiente está rodando: **Não** (o serviço sobe sob demanda pelo script).
+O ambiente está rodando: **Sim, sob demanda**: `dev-service-check.sh` sobe a infraestrutura e o serviço, confere e encerra o serviço.
 
 ## Evidências
-`docs/backlog/reports/AZ-014-evidencia-build.log` (resumo do build: `BUILD SUCCESS`, 18 testes, 1 min 22 s).
+- `docs/backlog/reports/AZ-014-evidencia-build.log`: `BUILD SUCCESS`, 18 testes, 1 min 22 s.
+- `docs/backlog/reports/AZ-014-evidencia-servico.log`: `platform-core` iniciado contra PostgreSQL e RabbitMQ do Compose; `/actuator/health` = UP, `/api/v1/system/ping` com envelope e `correlationId`, `/v3/api-docs` publicado.
 
 ## Dependências
 AZ-010 e AZ-011 (feitas).
 
 ## Riscos
-- O serviço roda como processo Java, não como contêiner do Compose. Dockerfile e serviço no Compose ficam para quando houver mais de um serviço (decisão registrada na documentação).
+- O serviço roda como processo Java na máquina, usando a infraestrutura do Compose; não é um contêiner do Compose. Dockerfile e serviço no Compose ficam para quando houver mais de um serviço (decisão registrada na documentação).
 - Java 25 ainda não testado (JDK 25 ausente). A CI usa o JDK 21.
 - O build local usou o JDK 26 com `--release 21`; um aviso benigno do ArchUnit aparece nesse JDK.
 
@@ -52,7 +53,7 @@ AZ-010 e AZ-011 (feitas).
 Nenhuma.
 
 ## Checklist de pronto
-- [ ] Critérios de aceite atendidos (faltam: serviço respondendo contra o Compose via `dev-service-check.sh` e CI verde)
+- [x] Critérios de aceite atendidos, exceto "testes passando no CI" (depende do push)
 - [ ] Testes passando em CI
 - [x] Documentação atualizada
 - [x] Sem credenciais, sem dados reais de usuários
