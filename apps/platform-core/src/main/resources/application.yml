@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: platform-core
+  datasource:
+    # Cada módulo tem seu schema (AGENTS.md). O Flyway cria o schema na primeira execução.
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:15432}/${POSTGRES_DB:aerozap}?currentSchema=platform_core
+    username: ${POSTGRES_USER:aerozap}
+    password: ${POSTGRES_PASSWORD:}
+  flyway:
+    schemas: platform_core
+    create-schemas: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:aerozap}
+    password: ${RABBITMQ_PASSWORD:}
+    listener:
+      simple:
+        default-requeue-rejected: false   # depois das tentativas, a mensagem vai para a DLQ
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1s
+          multiplier: 2
+          max-interval: 10s
+
+server:
+  port: ${SERVER_PORT:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+aerozap:
+  outbox:
+    poll-interval-ms: 1000
+    batch-size: 50
