@@ -1,0 +1,176 @@
+# AeroZap — CI base (AZ-012)
+# Roda por diretório alterado (ADR-0001). Verificações base rodam sempre.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------- verificações base (sempre)
+  base:
+    name: Base (segredos, scripts, compose)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # histórico completo para a varredura de segredos
+
+      - name: Varredura de segredos (falha se encontrar)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint dos scripts de shell
+        run: shellcheck -S warning scripts/*.sh
+
+      - name: Compose válido
+        run: |
+          cp .env.example .env
+          docker compose --env-file .env -f infrastructure/compose/docker-compose.yml config --quiet
+
+      - name: Todas as imagens com versão fixada (sem latest)
+        run: |
+          f=infrastructure/compose/docker-compose.yml
+          if grep -nE '^\s*image:' "$f" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
+            echo "::error::imagem sem tag de versão no Compose"; exit 1
+          fi
+          if grep -n ':latest' "$f"; then
+            echo "::error::tag latest no Compose"; exit 1
+          fi
+
+      - name: Nenhum arquivo .env versionado
+        run: |
+          if git ls-files | grep -E '(^|/)\.env($|\.[^e])' | grep -v '\.env\.example$'; then
+            echo "::error::arquivo .env versionado"; exit 1
+          fi
+
+  # ---------------------------------------------------------------- vulnerabilidades em dependências (só PR)
+  dependency-review:
+    name: Revisão de dependências
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  # ---------------------------------------------------------------- o que mudou
+  changes:
+    name: Detectar diretórios alterados
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      api-gateway: ${{ steps.f.outputs.api-gateway }}
+      platform-core: ${{ steps.f.outputs.platform-core }}
+      search: ${{ steps.f.outputs.search }}
+      conversation-ai: ${{ steps.f.outputs.conversation-ai }}
+      messaging: ${{ steps.f.outputs.messaging }}
+      frontend: ${{ steps.f.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            api-gateway:
+              - 'apps/api-gateway/**'
+              - 'libs/java/**'
+              - 'pom.xml'
+            platform-core:
+              - 'apps/platform-core/**'
+              - 'libs/java/**'
+              - 'pom.xml'
+            search:
+              - 'apps/search/**'
+              - 'libs/java/**'
+              - 'pom.xml'
+            conversation-ai:
+              - 'apps/conversation-ai/**'
+              - 'libs/java/**'
+              - 'pom.xml'
+            messaging:
+              - 'apps/messaging/**'
+              - 'libs/java/**'
+              - 'pom.xml'
+            frontend:
+              - 'frontend/**'
+              - 'libs/typescript/**'
+
+  # ---------------------------------------------------------------- serviços Java (um job por serviço)
+  api-gateway:
+    needs: changes
+    if: needs.changes.outputs.api-gateway == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: api-gateway }
+    permissions: { contents: read, security-events: write }
+
+  platform-core:
+    needs: changes
+    if: needs.changes.outputs.platform-core == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: platform-core }
+    permissions: { contents: read, security-events: write }
+
+  search:
+    needs: changes
+    if: needs.changes.outputs.search == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: search }
+    permissions: { contents: read, security-events: write }
+
+  conversation-ai:
+    needs: changes
+    if: needs.changes.outputs.conversation-ai == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: conversation-ai }
+    permissions: { contents: read, security-events: write }
+
+  messaging:
+    needs: changes
+    if: needs.changes.outputs.messaging == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: messaging }
+    permissions: { contents: read, security-events: write }
+
+  # ---------------------------------------------------------------- frontend
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    uses: ./.github/workflows/frontend.yml
+    permissions: { contents: read, security-events: write }
+
+  # ---------------------------------------------------------------- resultado único (use este nome na proteção de branch)
+  ci-ok:
+    name: CI OK
+    if: always()
+    needs: [base, dependency-review, changes, api-gateway, platform-core, search, conversation-ai, messaging, frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Todos os jobs necessários passaram ou foram pulados
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Resultados: $RESULTS"
+          case " $RESULTS " in
+            *" failure "*|*" cancelled "*) echo "::error::há job com falha"; exit 1 ;;
+          esac

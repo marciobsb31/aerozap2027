@@ -1,0 +1,9 @@
+# Atualizações automáticas. Adicione "maven" (/) e "npm" (/frontend) quando existirem pom.xml e package.json.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "AZ-012 ci"
