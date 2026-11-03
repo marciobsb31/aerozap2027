@@ -10,7 +10,7 @@ Status: READY_FOR_REVIEW, **sem execução no GitHub ainda** (a branch não foi 
 
 ## Implementado
 - `.github/workflows/ci.yml`: job Base (gitleaks no histórico completo, shellcheck, Compose válido, imagens com tag fixa, nenhum `.env` versionado), revisão de dependências em PR, detecção de diretórios alterados, um job por serviço Java, job do frontend e o resultado único **CI OK**.
-- `.github/workflows/java-service.yml` e `frontend.yml`: fluxos reutilizáveis com lint e testes (Maven `verify` com Testcontainers; npm), CodeQL, auditoria, build e varredura de imagem (Trivy, falha em crítica). Pulam os passos de build enquanto não há `pom.xml`/`package.json`.
+- `.github/workflows/java-service.yml` e `frontend.yml`: fluxos reutilizáveis com lint e testes (Maven `verify` com Testcontainers; npm), CodeQL, auditoria e build de imagem. A varredura de imagem (Trivy) fica para o primeiro Dockerfile. Pulam os passos de build enquanto não há `pom.xml`/`package.json`.
 - `.github/dependabot.yml` (GitHub Actions), `.gitleaks.toml`, `scripts/ci-local.sh` e `docs/architecture/ci.md`.
 
 ## Arquivos alterados
@@ -24,7 +24,7 @@ Não.
 - Integração: **PENDENTE** (os workflows só executam no GitHub)
 - Contrato: N/A
 - Concorrência/idempotência: N/A
-- Segurança: parcial (gitleaks, revisão de dependências, npm audit e Trivy configurados, ainda não exercitados)
+- Segurança: parcial (gitleaks, revisão de dependências, npm audit configurados; a varredura de imagem foi adiada)
 
 ## Como verificar
 Local: `bash scripts/ci-local.sh`. No GitHub: enviar a branch, abrir o PR e conferir a aba Actions. O ambiente está rodando: **Não** (CI depende do GitHub).
@@ -39,7 +39,7 @@ Local: `bash scripts/ci-local.sh`. No GitHub: enviar a branch, abrir o PR e conf
 AZ-010 (feita). Para o critério "pipeline roda por diretório" ser exercitado de verdade, é preciso código em `apps/` ou `frontend/` (AZ-014, AZ-016).
 
 ## Riscos
-- Versões das ações não conferidas contra o GitHub (tags `@v4`, `@v3`, `@v2`, `trivy-action@0.28.0`); o Dependabot as mantém.
+- 1ª execução na CI (03/11/2026) revelou: `trivy-action@0.28.0` inexistente (retirada), shellcheck SC2164 em `dev-check.sh` (corrigido) e revisão de dependências sem o grafo de dependências ativo (tolerada com `continue-on-error` até a ativação). Correção na branch `bugfix/AZ-012-ci-primeira-execucao`; falta reexecutar a CI para confirmar verde.
 - `java-version: '25'` e o fluxo Java inteiro só serão validados com o primeiro serviço.
 - Proteção de branch e code scanning são configurações manuais no GitHub (ver `docs/architecture/ci.md`).
 
