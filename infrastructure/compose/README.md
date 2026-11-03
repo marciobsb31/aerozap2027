@@ -31,7 +31,7 @@ bash scripts/dev-down.sh --apagar-dados   # apaga também os volumes
 ## Serviços e portas (somente em 127.0.0.1)
 | Serviço | Porta | Painel |
 |---|---|---|
-| PostgreSQL 17.5 | 5432 | — |
+| PostgreSQL 17.5 | **15432** (no contêiner é 5432) | — |
 | RabbitMQ 4.1 | 5672 | http://localhost:15672 |
 | Redis 7.4 | 6379 | — |
 | Object storage (RustFS, S3) | 9000 | http://localhost:9001 |
@@ -40,4 +40,5 @@ bash scripts/dev-down.sh --apagar-dados   # apaga também os volumes
 - Versões de imagem fixadas; nenhuma tag `latest`.
 - Senhas só por variável de ambiente (`.env`, ignorado pelo Git). Os valores do `.env.example` são fictícios e servem apenas para uso local.
 - As portas escutam só em `127.0.0.1`.
+- O PostgreSQL usa a porta **15432** no seu computador para não colidir com um PostgreSQL local ou com portas reservadas do Windows (erro "forbidden by its access permissions" na 5432). Para mudar, ajuste `POSTGRES_PORT` no `.env`.
 - O RustFS é só para desenvolvimento (o MinIO saiu do Docker Hub). A escolha de produção fica para a Fase 3 (D-14).

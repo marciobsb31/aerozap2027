@@ -22,7 +22,7 @@ echo
 "${COMPOSE[@]}" ps
 echo
 echo "✓ Ambiente saudável."
-echo "  PostgreSQL ...... localhost:${POSTGRES_PORT:-5432}"
+echo "  PostgreSQL ...... localhost:${POSTGRES_PORT:-15432}"
 echo "  RabbitMQ ........ localhost:${RABBITMQ_PORT:-5672}  (painel: http://localhost:${RABBITMQ_MANAGEMENT_PORT:-15672})"
 echo "  Redis ........... localhost:${REDIS_PORT:-6379}"
 echo "  Object storage .. http://localhost:${S3_PORT:-9000}  (console: http://localhost:${S3_CONSOLE_PORT:-9001})"
