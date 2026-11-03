@@ -10,6 +10,17 @@ if ! command -v mvn >/dev/null 2>&1; then
   exit 1
 fi
 
+# JAVA_HOME apontando para um JDK que não existe mais (comum após atualizar/remover o JDK) quebra o Maven.
+# Nesse caso ele é ignorado e o Java do PATH é usado.
+if [ -n "${JAVA_HOME:-}" ]; then
+  JH="$JAVA_HOME"
+  if command -v cygpath >/dev/null 2>&1; then JH="$(cygpath -u "$JAVA_HOME" 2>/dev/null || echo "$JAVA_HOME")"; fi
+  if [ ! -x "$JH/bin/java" ] && [ ! -x "$JH/bin/java.exe" ]; then
+    echo "• JAVA_HOME ($JAVA_HOME) não existe; ignorando e usando o Java do PATH."
+    unset JAVA_HOME
+  fi
+fi
+
 ARGS=(-B -ntp verify)
 if [ "${1:-}" = "--sem-docker" ]; then
   ARGS+=("-Dtest=!*IntegrationTest" "-Dsurefire.failIfNoSpecifiedTests=false")
