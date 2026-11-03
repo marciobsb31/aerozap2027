@@ -1,0 +1,8 @@
+AZ-000 tipo(escopo): resumo no imperativo, até 72 caracteres
+
+# Corpo: o que mudou e por quê (não o como). Quebre em ~72 colunas.
+#
+# Tipos: feat, fix, docs, refactor, test, chore, ci, build, perf
+# Exemplo: AZ-010 docs(repo): cria estrutura inicial e README
+#
+# Rodapé: referências, BREAKING CHANGE, Co-Authored-By.

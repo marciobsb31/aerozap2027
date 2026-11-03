@@ -1,0 +1,53 @@
+# Segredos e ambiente local — NUNCA versionar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+application-local.yml
+application-local.properties
+
+# Java / Maven / Gradle
+target/
+build/
+.gradle/
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+.nx/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+
+# IDEs
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.classpath
+.project
+.settings/
+.sts4-cache/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker e dados locais
+infrastructure/**/data/
+*.log
+logs/
+
+# Testes e relatórios
+test-results/
+playwright-report/
