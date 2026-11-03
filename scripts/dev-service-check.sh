@@ -9,6 +9,10 @@ mkdir -p logs
   bash scripts/dev-up.sh || { echo "✗ infraestrutura não subiu"; exit 1; }
 
   set -a; . ./.env; set +a
+  # shellcheck source=scripts/lib/java-env.sh
+  . scripts/lib/java-env.sh
+  configurar_java || exit 1
+  echo "• java: $(java -version 2>&1 | head -n 1)"
   JAR=""
   for f in apps/platform-core/target/platform-core-*.jar; do [ -f "$f" ] && JAR="$f" && break; done
   if [ -z "$JAR" ]; then echo "✗ jar não encontrado; rode: bash scripts/build.sh --sem-docker"; exit 1; fi
@@ -22,7 +26,7 @@ mkdir -p logs
   OK=0
   for _ in $(seq 1 45); do
     if curl -fsS "http://localhost:$PORT/actuator/health" 2>/dev/null | grep -q UP; then OK=1; break; fi
-    if ! kill -0 "$PID" 2>/dev/null; then break; fi
+    if ! kill -0 "$PID" 2>/dev/null; then echo "✗ o processo java terminou sozinho."; break; fi
     sleep 2
   done
 
