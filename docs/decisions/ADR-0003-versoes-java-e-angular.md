@@ -33,3 +33,6 @@ Spike em AZ-014 com critérios: build, testes de integração com Testcontainers
 
 ## Validação
 Pipeline verde na versão escolhida; relatório curto do spike anexado ao DELIVERY REPORT de AZ-014.
+
+## Nota de implementação (2026-11-03)
+O Product Owner informou que o JDK instalado na máquina de desenvolvimento é o **Java 21**. Conforme o fallback previsto nesta ADR, o projeto **começa em Java 21** (`release` 21) com Spring Boot 4.1.x, e a CI usa o JDK 21. A versão fica em uma única propriedade do POM pai, de modo que a passagem para o **Java 25 LTS** é uma troca de uma linha, a fazer quando o JDK 25 estiver instalado e o spike da AZ-014 confirmar a compatibilidade das dependências. A decisão de adotar o Java 25 como alvo continua valendo.

@@ -34,6 +34,6 @@ Ainda não há `pom.xml` nem `package.json`. Os fluxos de Java e Angular **já e
 
 ## Limitações conhecidas
 - As ações são fixadas por versão principal (`@v4` etc.), não por hash. O Dependabot atualiza as versões toda semana. Os números de versão das ações não foram conferidos contra o GitHub neste ambiente.
-- A tag `aquasecurity/trivy-action@0.28.0` e o `java-version: '25'` precisam ser confirmados na primeira execução real do fluxo Java.
+- A tag `aquasecurity/trivy-action@0.28.0` e o JDK 21 do fluxo Java (alvo final: 25, ADR-0003) precisam ser confirmados na primeira execução real do fluxo Java.
 - O Dependabot cobre só `github-actions` por enquanto. `maven`, `npm` e `docker` entram quando houver `pom.xml`, `package.json` e Dockerfiles.
 - O gitleaks ignora `.env.example` (valores fictícios, ver `.gitleaks.toml`).
