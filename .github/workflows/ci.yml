@@ -61,6 +61,9 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Exige o "Dependency graph" ativo (Settings > Advanced Security). Enquanto não estiver, a falha é tolerada.
+    # Depois de ativar o grafo, REMOVA a linha abaixo para a verificação voltar a bloquear.
+    continue-on-error: true
     permissions:
       contents: read
       pull-requests: write

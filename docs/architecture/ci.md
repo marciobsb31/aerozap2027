@@ -8,9 +8,9 @@ Gatilhos: pull request, push em `main`/`develop` e execução manual. Execuçõe
 | Job | Roda | O que faz | Falha quando |
 |---|---|---|---|
 | **Base** | sempre | gitleaks (histórico completo), shellcheck, `docker compose config`, imagens com tag fixa, nenhum `.env` versionado | segredo encontrado, script com aviso, Compose inválido, tag `latest` |
-| **Revisão de dependências** | só em PR | `dependency-review-action` | dependência nova com vulnerabilidade **alta** ou pior |
+| **Revisão de dependências** | só em PR | `dependency-review-action` | dependência nova com vulnerabilidade **alta** ou pior. **Hoje tolerada** (`continue-on-error`) até o grafo de dependências ser ativado no GitHub |
 | **Detectar diretórios** | sempre | `paths-filter` decide o que mudou | — |
-| **api-gateway, platform-core, search, conversation-ai, messaging** | se `apps/<serviço>`, `libs/java` ou `pom.xml` mudou | Maven `verify` (lint, testes unitários e de integração com Testcontainers), CodeQL (SAST), build da imagem se houver Dockerfile, Trivy na imagem | teste falha ou vulnerabilidade **crítica** na imagem. Os achados do CodeQL aparecem em *code scanning*; para bloqueá-los, exija o resultado do CodeQL na proteção de branch |
+| **api-gateway, platform-core, search, conversation-ai, messaging** | se `apps/<serviço>`, `libs/java` ou `pom.xml` mudou | Maven `verify` (lint, testes unitários e de integração com Testcontainers), CodeQL (SAST), build da imagem se houver Dockerfile | teste falha. A varredura de imagem (Trivy) entra com o primeiro Dockerfile. Os achados do CodeQL aparecem em *code scanning*; para bloqueá-los, exija o resultado do CodeQL na proteção de branch |
 | **Frontend** | se `frontend/` ou `libs/typescript` mudou | `npm ci`, `npm audit`, lint, testes, build, CodeQL | vulnerabilidade **crítica**, lint, teste ou build falha |
 | **CI OK** | sempre | resultado único dos jobs acima | qualquer job com falha ou cancelado |
 
@@ -30,10 +30,11 @@ Ainda não há `pom.xml` nem `package.json`. Os fluxos de Java e Angular **já e
 
 ## Configurações manuais no GitHub (não dá para versionar)
 1. **Settings > Branches:** proteger `main` e `develop`: exigir pull request e a verificação **CI OK**.
-2. **Settings > Code security:** manter ativos o grafo de dependências, o Dependabot alerts e o code scanning.
+2. **Settings > Advanced Security** (ou Code security): **ativar o Dependency graph**, o Dependabot alerts e o code scanning. Ao ativar o grafo, remova o `continue-on-error` do job de revisão de dependências em `ci.yml`.
 
 ## Limitações conhecidas
 - As ações são fixadas por versão principal (`@v4` etc.), não por hash. O Dependabot atualiza as versões toda semana. Os números de versão das ações não foram conferidos contra o GitHub neste ambiente.
-- A tag `aquasecurity/trivy-action@0.28.0` e o JDK 21 do fluxo Java (alvo final: 25, ADR-0003) precisam ser confirmados na primeira execução real do fluxo Java.
+- **Primeira execução real (03/11/2026):** a ação `aquasecurity/trivy-action@0.28.0` não existia e quebrava todos os jobs de serviço; a varredura de imagem foi retirada até o primeiro Dockerfile. A revisão de dependências falhou por falta do grafo de dependências, e o job de scripts por um aviso do shellcheck (corrigido).
+- O fluxo Java (JDK 21; alvo final 25, ADR-0003) ainda não foi exercitado de ponta a ponta na CI.
 - O Dependabot cobre só `github-actions` por enquanto. `maven`, `npm` e `docker` entram quando houver `pom.xml`, `package.json` e Dockerfiles.
 - O gitleaks ignora `.env.example` (valores fictícios, ver `.gitleaks.toml`).

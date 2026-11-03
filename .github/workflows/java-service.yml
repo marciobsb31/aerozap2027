@@ -62,11 +62,6 @@ jobs:
         if: steps.has.outputs.code == 'true' && hashFiles(format('apps/{0}/Dockerfile', inputs.service)) != ''
         run: docker build -t "aerozap/$SERVICE:ci" "apps/$SERVICE"
 
-      - name: Varredura da imagem (falha em vulnerabilidade crítica)
-        if: steps.image.outcome == 'success'
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: aerozap/${{ inputs.service }}:ci
-          severity: CRITICAL
-          exit-code: '1'
-          ignore-unfixed: true
+      # Varredura da imagem (falha em vulnerabilidade crítica): entra junto com o primeiro Dockerfile.
+      # A ação aquasecurity/trivy-action@0.28.0 não existe (erro da primeira execução em 03/11/2026);
+      # ao reativar, use uma tag existente confirmada no repositório da ação, preferindo fixar pelo hash do commit.

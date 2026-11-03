@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sobe o ambiente, verifica cada serviço e grava toda a saída em logs/dev-check.log
 # (a pasta logs/ não é versionada). Em caso de falha, anexa o estado e os logs dos contêineres.
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 mkdir -p logs
 LOG=logs/dev-check.log
 COMPOSE=(docker compose --env-file .env -f infrastructure/compose/docker-compose.yml)
