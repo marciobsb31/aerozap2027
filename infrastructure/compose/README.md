@@ -11,6 +11,11 @@ bash scripts/dev-up.sh
 ```
 O script cria o `.env` a partir de `.env.example` na primeira vez, sobe tudo com `docker compose up -d --wait` e só termina quando todos os health checks estão saudáveis.
 
+## Subir e verificar de uma vez (grava a evidência em `logs/dev-check.log`)
+```bash
+bash scripts/dev-check.sh
+```
+
 ## Verificar
 ```bash
 bash scripts/dev-verify.sh      # testa cada serviço e imprime a evidência
