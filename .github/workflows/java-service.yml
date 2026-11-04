@@ -36,7 +36,7 @@ jobs:
         if: steps.has.outputs.code == 'true'
         with:
           distribution: temurin
-          java-version: '21'          # ADR-0003 (nota de 2026-11-03): começa em 21; alvo 25
+          java-version: '25'          # ADR-0003: alvo confirmado pelo spike da AZ-014 (04/11/2026)
           cache: maven
 
       - name: CodeQL (SAST) — início

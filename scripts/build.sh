@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Compila e testa todos os módulos Java e grava a saída em logs/build.log (pasta não versionada).
-# Requisitos: JDK 21+, Maven e, para os testes de integração, Docker em execução (Testcontainers).
+# Requisitos: JDK 25+, Maven e, para os testes de integração, Docker em execução (Testcontainers).
 # Opções (podem ser combinadas):
 #   --sem-docker  pula os testes *IntegrationTest (só compila e roda os testes unitários)
-#   --java25      compila para o Java 25 em lugar do 21, sem alterar o pom (spike da ADR-0003)
+#   --java=NN     compila para outra versão do Java sem alterar o pom (ex.: --java=21)
 cd "$(dirname "$0")/.." || exit 1
 mkdir -p logs
 
@@ -27,21 +27,25 @@ MAVEN_REPO_ARGS=()
 configurar_repositorio_maven || exit 1
 
 ARGS=(-B -ntp verify)
-ALVO_JAVA="21 (padrão do projeto)"
+ALVO_JAVA="25 (padrão do projeto, ADR-0003)"
 for opcao in "$@"; do
   case "$opcao" in
     --sem-docker)
       ARGS+=("-Dtest=!*IntegrationTest" "-Dsurefire.failIfNoSpecifiedTests=false")
       echo "• Pulando os testes de integração (sem Docker)."
       ;;
-    --java25)
-      # Spike da ADR-0003: compila para o Java 25 sem mexer no pom.
-      ARGS+=("-Djava.version=25")
-      ALVO_JAVA="25 (spike da ADR-0003)"
-      echo "• Spike: compilando para o Java 25."
+    --java=*)
+      # Spike/fallback da ADR-0003: compila para outra versão sem mexer no pom.
+      VERSAO="${opcao#--java=}"
+      case "$VERSAO" in
+        ''|*[!0-9]*) echo "✗ Versão inválida em $opcao. Exemplo: --java=21." >&2; exit 2 ;;
+      esac
+      ARGS+=("-Djava.version=$VERSAO")
+      ALVO_JAVA="$VERSAO (pedido na linha de comando)"
+      echo "• Compilando para o Java $VERSAO."
       ;;
     *)
-      echo "✗ Opção desconhecida: $opcao. Use --sem-docker e/ou --java25." >&2
+      echo "✗ Opção desconhecida: $opcao. Use --sem-docker e/ou --java=NN." >&2
       exit 2
       ;;
   esac

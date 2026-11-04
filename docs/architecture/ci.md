@@ -35,6 +35,6 @@ Ainda não há `pom.xml` nem `package.json`. Os fluxos de Java e Angular **já e
 ## Limitações conhecidas
 - As ações são fixadas por versão principal (`@v4` etc.), não por hash. O Dependabot atualiza as versões toda semana. Os números de versão das ações não foram conferidos contra o GitHub neste ambiente.
 - **Primeira execução real (03/11/2026):** a ação `aquasecurity/trivy-action@0.28.0` não existia e quebrava todos os jobs de serviço; a varredura de imagem foi retirada até o primeiro Dockerfile. A revisão de dependências falhou por falta do grafo de dependências, e o job de scripts por um aviso do shellcheck (corrigido).
-- O fluxo Java (JDK 21; alvo final 25, ADR-0003) ainda não foi exercitado de ponta a ponta na CI.
+- O fluxo Java usa o **Temurin 25** (ADR-0003, spike concluído em 04/11/2026) e ainda não foi exercitado de ponta a ponta na CI; é a execução na CI que comprova o funcionamento sobre um JDK 25.
 - O Dependabot cobre só `github-actions` por enquanto. `maven`, `npm` e `docker` entram quando houver `pom.xml`, `package.json` e Dockerfiles.
 - O gitleaks ignora `.env.example` (valores fictícios, ver `.gitleaks.toml`).

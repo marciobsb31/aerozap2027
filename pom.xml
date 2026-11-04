@@ -18,8 +18,9 @@
   <description>Versões e módulos Java do AeroZap (ADR-0001, ADR-0003)</description>
 
   <properties>
-    <!-- ADR-0003: começa em Java 21 (fallback). Para o Java 25 LTS, troque apenas esta linha após o spike da AZ-014. -->
-    <java.version>21</java.version>
+    <!-- ADR-0003: Java 25 LTS, confirmado pelo spike da AZ-014 em 04/11/2026 (build e testes verdes).
+         O fallback para 21 continua possível trocando apenas esta linha. -->
+    <java.version>25</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <archunit.version>1.4.1</archunit.version>
     <springdoc.version>3.0.0</springdoc.version>
