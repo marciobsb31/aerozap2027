@@ -1,0 +1,113 @@
+# AeroZap — ambiente local (AZ-011)
+# Sobe PostgreSQL, RabbitMQ, Redis e armazenamento de objetos (S3 compatível, com URLs assinadas).
+# Uso: bash scripts/dev-up.sh   (ou: docker compose --env-file .env -f infrastructure/compose/docker-compose.yml up -d --wait)
+# Segredos vêm do arquivo .env (nunca versionado). Veja .env.example.
+
+name: aerozap
+
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: aerozap-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aerozap}
+      POSTGRES_USER: ${POSTGRES_USER:-aerozap}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      TZ: UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+  rabbitmq:
+    image: rabbitmq:4.1.0-management-alpine
+    container_name: aerozap-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-aerozap}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?defina RABBITMQ_PASSWORD no .env}
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+  redis:
+    image: redis:7.4.2-alpine
+    container_name: aerozap-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?defina REDIS_PASSWORD no .env}", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 192m
+    cpus: 0.5
+    networks: [aerozap-net]
+
+  # Armazenamento de objetos compatível com S3 e URLs assinadas (áudio do WhatsApp, AZ-043).
+  # Só para desenvolvimento local. A solução de produção é decidida na Fase 3 (D-14).
+  # RustFS: o MinIO saiu do Docker Hub, então esta é a alternativa S3 usada no ambiente local.
+  object-storage:
+    image: rustfs/rustfs:1.0.4
+    container_name: aerozap-object-storage
+    restart: unless-stopped
+    # root evita erro de permissão no volume nomeado (a imagem roda como outro usuário). Só para uso local.
+    user: "0:0"
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-aerozap}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:?defina S3_SECRET_KEY no .env (mínimo 8 caracteres)}
+    ports:
+      - "127.0.0.1:${S3_PORT:-9000}:9000"
+      - "127.0.0.1:${S3_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - object-storage-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "(command -v curl >/dev/null 2>&1 && curl -fsS http://localhost:9000/health) || (command -v wget >/dev/null 2>&1 && wget -qO- http://localhost:9000/health) || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    mem_limit: 384m
+    cpus: 0.5
+    networks: [aerozap-net]
+
+networks:
+  aerozap-net:
+    name: aerozap-net
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
+  redis-data:
+  object-storage-data:

@@ -1,0 +1,9 @@
+# Regras padrão do gitleaks + exceções para valores fictícios documentados.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Arquivos de exemplo com valores fictícios"
+paths = [
+  '''\.env\.example$''',
+]

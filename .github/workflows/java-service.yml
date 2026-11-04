@@ -1,0 +1,67 @@
+# Fluxo reutilizável para um serviço Java (AZ-012). Chamado por ci.yml.
+# Enquanto não houver apps/<serviço>/pom.xml, os passos de build são pulados e o job termina verde.
+name: Serviço Java
+
+on:
+  workflow_call:
+    inputs:
+      service:
+        description: Nome do diretório em apps/
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ inputs.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    env:
+      SERVICE: ${{ inputs.service }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Há código para construir?
+        id: has
+        run: |
+          if [ -f "apps/$SERVICE/pom.xml" ]; then echo "code=true" >> "$GITHUB_OUTPUT"
+          else echo "code=false" >> "$GITHUB_OUTPUT"; echo "::notice::apps/$SERVICE ainda não tem pom.xml; build pulado"; fi
+
+      - uses: actions/setup-java@v4
+        if: steps.has.outputs.code == 'true'
+        with:
+          distribution: temurin
+          java-version: '21'          # ADR-0003 (nota de 2026-11-03): começa em 21; alvo 25
+          cache: maven
+
+      - name: CodeQL (SAST) — início
+        if: steps.has.outputs.code == 'true'
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          build-mode: none
+
+      - name: Lint, testes unitários e de integração (Testcontainers)
+        if: steps.has.outputs.code == 'true'
+        # O POM do projeto concentra checkstyle/spotless e os testes; o Docker do runner serve ao Testcontainers.
+        run: mvn -B -ntp -pl "apps/$SERVICE" -am verify
+
+      - name: CodeQL (SAST) — análise
+        if: steps.has.outputs.code == 'true'
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:java-kotlin/service:${{ inputs.service }}
+
+      - name: Construir imagem
+        id: image
+        if: steps.has.outputs.code == 'true' && hashFiles(format('apps/{0}/Dockerfile', inputs.service)) != ''
+        run: docker build -t "aerozap/$SERVICE:ci" "apps/$SERVICE"
+
+      # Varredura da imagem (falha em vulnerabilidade crítica): entra junto com o primeiro Dockerfile.
+      # A ação aquasecurity/trivy-action@0.28.0 não existe (erro da primeira execução em 03/11/2026);
+      # ao reativar, use uma tag existente confirmada no repositório da ação, preferindo fixar pelo hash do commit.

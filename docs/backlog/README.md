@@ -31,10 +31,10 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 | ID | Tarefa | Dono | Depende de | Estado | TASK |
 |---|---|---|---|---|---|
 | AZ-010 | Estrutura do repositório, convenções, branches, templates de PR | A6 + A0 | AZ-007 | REVIEW | [AZ-010](tasks/AZ-010.md) |
-| AZ-011 | Docker Compose local: PostgreSQL, RabbitMQ, Redis, object storage; **um comando sobe tudo** | A6 | AZ-010 | BACKLOG | [AZ-011](tasks/AZ-011.md) |
-| AZ-012 | Pipeline CI base: lint, testes, Testcontainers, SAST, dependências, segredos, build de imagem | A6 | AZ-010 | BACKLOG | [AZ-012](tasks/AZ-012.md) |
+| AZ-011 | Docker Compose local: PostgreSQL, RabbitMQ, Redis, object storage; **um comando sobe tudo** | A6 | AZ-010 | REVIEW | [AZ-011](tasks/AZ-011.md) |
+| AZ-012 | Pipeline CI base: lint, testes, Testcontainers, SAST, dependências, segredos, build de imagem | A6 | AZ-010 | REVIEW | [AZ-012](tasks/AZ-012.md) |
 | AZ-013 | Observabilidade base: métricas, dashboards, logs estruturados, tracing, alertas mínimos | A6 | AZ-011 | BACKLOG | [AZ-013](tasks/AZ-013.md) |
-| AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | BACKLOG | [AZ-014](tasks/AZ-014.md) |
+| AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | REVIEW | [AZ-014](tasks/AZ-014.md) |
 | AZ-015 | API Gateway/BFF base: autenticação de entrada, roteamento, rate limit | A1 | AZ-014 | BACKLOG | [AZ-015](tasks/AZ-015.md) |
 | AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | BACKLOG | [AZ-016](tasks/AZ-016.md) |
 | AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | BACKLOG | [AZ-017](tasks/AZ-017.md) |
