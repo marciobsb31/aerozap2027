@@ -49,6 +49,12 @@ management:
     sampling:
       # Ambiente local: todos os rastros. Em produção, bem menor (ver docs/architecture/observabilidade.md).
       probability: ${TRACING_AMOSTRAGEM:1.0}
+  otlp:
+    metrics:
+      export:
+        # As métricas são coletadas pelo Prometheus (modelo de puxar); sem isto o OpenTelemetry
+        # também tentaria empurrá-las a cada minuto, gerando erro de conexão.
+        enabled: false
   opentelemetry:
     tracing:
       export:

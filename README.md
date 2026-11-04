@@ -185,8 +185,8 @@ bash scripts/obs-up.sh          # e: bash scripts/obs-verify.sh
 | `scripts/obs-up.sh` / `obs-verify.sh` / `obs-down.sh` | observabilidade |
 | `scripts/probe-tags.sh` | lista versões publicadas das imagens (nenhuma tag `latest`) |
 
-**Pré-requisitos:** JDK 21 ou mais novo (o projeto compila para 21; o alvo final é o 25, ver
-[ADR-0003](docs/decisions/ADR-0003-versoes-java-e-angular.md)), Maven 3.9+, Docker e Docker Compose.
+**Pré-requisitos:** JDK 25 ou mais novo ([ADR-0003](docs/decisions/ADR-0003-versoes-java-e-angular.md)),
+Maven 3.9+, Docker e Docker Compose.
 Node.js (LTS) com npm entra junto com o front-end.
 
 Pouco espaço no disco do sistema? Veja

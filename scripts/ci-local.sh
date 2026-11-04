@@ -26,7 +26,7 @@ rm -f "$TMP_ENV"
 
 passo "Imagens com versão fixada"
 for F in $(find infrastructure -name 'docker-compose*.yml' | sort); do
-  if grep -nE '^\s*image:' "$F" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then erro "imagem sem tag de versão em $F"; fi
+  if grep -nE '^\s*image:' "$F" | sed 's/#.*//' | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then erro "imagem sem tag de versão em $F"; fi
   if grep -n ':latest' "$F"; then erro "tag latest em $F"; fi
 done
 echo "✓ tags conferidas"

@@ -77,8 +77,8 @@ alertas, por isso entram documentados.
 
 ## Testes
 
-- Unitários: **PASS** no mascarador (17 casos, inclusive os que devem ser preservados) e na
-  palavra de conversão. Pendente a execução no ambiente do desenvolvedor junto com o restante.
+- Unitários: **PASS** — 21 testes do `observability-starter` verdes no build de 04/11/2026
+  (mascarador, inclusive os casos que devem ser preservados, e palavra de conversão).
 - Integração: N/A nesta tarefa (a verificação é o `obs-verify.sh` contra os contêineres reais).
 - Contrato: N/A
 - Concorrência/idempotência: N/A
@@ -104,8 +104,11 @@ de desenvolvimento não tem Docker).
 
 ## Evidências
 
-- `logs/obs-verify.log` (a anexar depois da execução)
-- `logs/probe-tags.log`: versões publicadas que justificam as tags fixadas
+- `logs/build.log` (04/11/2026 10:11): `BUILD SUCCESS`, `observability-starter ... SUCCESS`,
+  21 testes verdes; o console já sai com `[platform-core] [sem-correlacao]` e a mensagem mascarada
+- `logs/obs-verify.log` (a anexar depois de subir os contêineres)
+- `logs/probe-tags.log` (04/11/2026 10:08): versões publicadas que justificam as tags fixadas —
+  Prometheus v3.13.5 (LTS), Alertmanager v0.34.2, Grafana 13.2.5, Loki 3.7.9, Tempo 3.1.1
 - Lint: `shellcheck -S warning` limpo em `scripts/*.sh` e `scripts/lib/*.sh`; `actionlint` limpo
 - YAML de todas as configurações de monitoramento validado
 
@@ -116,16 +119,26 @@ de desenvolvimento não tem Docker).
 
 ## Riscos
 
-- **Configuração de terceiros não exercitada.** As chaves do appender do Loki (loki4j) e os
-  arquivos de configuração do Loki e do Tempo seguem a documentação das versões fixadas, mas só a
-  primeira execução confirma. Se algo divergir, o erro aparece no `obs-verify.sh` e a correção é
-  pontual.
+- **Configuração de terceiros parcialmente exercitada.** O build de 04/11/2026 confirmou que o
+  `logback-base.xml` carrega (console com correlação e `%msgSeguro` funcionando) e que a classe do
+  appender do Loki existe; as chaves internas desse appender e os arquivos do Loki e do Tempo só
+  são confirmados ao subir os contêineres. Se algo divergir, aparece no `obs-verify.sh`.
 - **Memória.** A observabilidade soma cerca de 2 GB. Por isso ela é opcional e separada do
   ambiente base: `dev-up.sh` não a sobe.
 - **O mascaramento é rede de segurança, não permissão.** Registrar dado de pessoa e confiar na
   máscara continua sendo erro de revisão.
 - **Alerta de teste.** Dispara sempre, de propósito. Se virar ruído, basta comentar o grupo
   `aerozap-teste`.
+
+## Correções feitas a partir do primeiro build
+
+- `conversionRule` usa `class`, não `converterClass` (atributo depreciado na versão de logback do
+  Spring Boot 4.1).
+- Envio OTLP de métricas desligado (`management.otlp.metrics.export.enabled: false`): o
+  `spring-boot-starter-opentelemetry` liga o empurrão de métricas por padrão, e aqui a coleta é
+  pelo Prometheus; sem isso o serviço tentaria empurrar métricas ao Tempo a cada minuto.
+- `obs-verify.sh` passou a conferir o plugin `rabbitmq_prometheus` por
+  `rabbitmq-plugins list -e`, sem passar caminho (o Git Bash converte caminhos em argumentos).
 
 ## Decisões necessárias
 
