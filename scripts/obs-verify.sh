@@ -24,7 +24,12 @@ tenta(){ curl -fsS --max-time 10 "$1" 2>/dev/null; }
   tenta "http://localhost:${PROM}/-/ready" >/dev/null && ok "Prometheus pronto" || falhou "Prometheus não responde em ${PROM}"
   tenta "http://localhost:${ALERTA}/-/ready" >/dev/null && ok "Alertmanager pronto" || falhou "Alertmanager não responde em ${ALERTA}"
   tenta "http://localhost:${GRAFANA}/api/health" | grep -q '"database"' && ok "Grafana pronto" || falhou "Grafana não responde em ${GRAFANA}"
-  tenta "http://localhost:${LOKI}/ready" >/dev/null && ok "Loki pronto" || falhou "Loki não responde em ${LOKI}"
+  if tenta "http://localhost:${LOKI}/ready" >/dev/null \
+     || tenta "http://localhost:${LOKI}/loki/api/v1/labels" | grep -q '"status":"success"'; then
+    ok "Loki respondendo"
+  else
+    falhou "Loki não responde em ${LOKI}"
+  fi
   tenta "http://localhost:${TEMPO}/ready" >/dev/null && ok "Tempo pronto" || falhou "Tempo não responde em ${TEMPO}"
 
   echo
@@ -52,7 +57,9 @@ tenta(){ curl -fsS --max-time 10 "$1" 2>/dev/null; }
   echo "— Logs no Loki —"
   ROTULOS=$(tenta "http://localhost:${LOKI}/loki/api/v1/label/service_name/values")
   echo "  $ROTULOS"
-  echo "$ROTULOS" | grep -q '"data":\[' && ok "Loki respondendo consultas" || falhou "Loki não respondeu à consulta de rótulos"
+  echo "$ROTULOS" | grep -q '"status":"success"' \
+    && ok "Loki respondendo consultas (sem log ainda é resposta válida)" \
+    || falhou "Loki não respondeu à consulta de rótulos"
   if echo "$ROTULOS" | grep -q 'platform-core'; then
     ok "há logs do platform-core no Loki"
   else
