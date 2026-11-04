@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0   # histórico completo para a varredura de segredos
 
       - name: Varredura de segredos (falha se encontrar)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
