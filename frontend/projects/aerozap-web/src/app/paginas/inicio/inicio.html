@@ -1,0 +1,53 @@
+<section class="inicio__chamada">
+  <h1>{{ i18n.t('inicio.titulo') }}</h1>
+  <p class="inicio__subtitulo">{{ i18n.t('inicio.subtitulo') }}</p>
+
+  <form class="inicio__formulario" (submit)="enviar($event)">
+    <az-campo-texto
+      class="inicio__campo"
+      [rotulo]="i18n.t('inicio.busca.rotulo')"
+      [dica]="i18n.t('inicio.busca.dica')"
+      [erro]="erro()"
+      [obrigatorio]="true"
+      [textoObrigatorio]="i18n.t('comum.obrigatorio')"
+      [(valor)]="consulta"
+      tipo="search"
+    />
+    <az-botao tipo="submit" [carregando]="enviando()">
+      {{ enviando() ? i18n.t('inicio.busca.enviando') : i18n.t('inicio.busca.enviar') }}
+    </az-botao>
+  </form>
+</section>
+
+<div class="inicio__cartoes">
+  <az-cartao [titulo]="i18n.t('inicio.exemplos.titulo')" [nivelDoTitulo]="2">
+    <ul class="inicio__exemplos">
+      <li>{{ i18n.t('inicio.exemplos.um') }}</li>
+      <li>{{ i18n.t('inicio.exemplos.dois') }}</li>
+      <li>{{ i18n.t('inicio.exemplos.tres') }}</li>
+    </ul>
+  </az-cartao>
+
+  <az-cartao [titulo]="i18n.t('estado.titulo')" [nivelDoTitulo]="2" [sutil]="true">
+    <div class="inicio__estado" role="status" aria-live="polite">
+      @switch (estado().situacao) {
+        @case ('verificando') {
+          <az-emblema tom="neutro">{{ i18n.t('estado.verificando') }}</az-emblema>
+        }
+        @case ('disponivel') {
+          <az-emblema tom="sucesso">{{ i18n.t('estado.disponivel') }}</az-emblema>
+        }
+        @default {
+          <az-emblema tom="erro">{{ i18n.t('estado.indisponivel') }}</az-emblema>
+        }
+      }
+    </div>
+
+    @if (estado().situacao === 'indisponivel') {
+      <p class="inicio__estado-detalhe">{{ i18n.t('comum.erro.generico') }}</p>
+      <az-botao variante="texto" (acionar)="verificarPlataforma()">
+        {{ i18n.t('estado.verificarDeNovo') }}
+      </az-botao>
+    }
+  </az-cartao>
+</div>

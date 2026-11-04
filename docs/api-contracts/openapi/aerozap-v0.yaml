@@ -1,0 +1,206 @@
+openapi: 3.1.1
+
+# Contrato HTTP público do AeroZap, versão 0 (marco M1).
+#
+# Este arquivo é a fonte de verdade do que a borda expõe: o cliente TypeScript do frontend é
+# gerado dele (`scripts/gerar-api-client.sh`) e a CI falha se o gerado sair de sincronia. Os
+# esquemas não são repetidos aqui — são referenciados por `$ref` para os arquivos publicados em
+# `docs/api-contracts/schemas/`, que já são JSON Schema 2020-12 e, portanto, válidos em OpenAPI
+# 3.1 sem tradução. Repetir a definição seria criar uma segunda verdade para divergir da primeira.
+#
+# Só entra aqui o que existe e responde hoje. Rota planejada não entra: um cliente gerado a partir
+# de endpoint inexistente compila e mente.
+
+info:
+  title: AeroZap API
+  version: 0.1.0
+  summary: Busca de passagens aéreas por conversa.
+  description: |
+    Toda resposta de sucesso vem no envelope `ApiResponse` (`data` + `meta`). Todo erro vem em
+    Problem Details (RFC 9457) com o `correlationId` da requisição — é por ele que o suporte
+    encontra o log e o rastro correspondentes.
+
+    Autenticação é JWT no cabeçalho `Authorization: Bearer`. Na fase 1 o token é HS256 com segredo
+    compartilhado; quando o serviço de identidade entrar (AZ-020), passa a ser validado por JWKS,
+    sem mudança para quem consome.
+  contact:
+    name: Equipe AeroZap
+    url: https://github.com/marcioeb/aerozap
+  license:
+    name: Proprietário
+
+servers:
+  - url: http://localhost:8080
+    description: Gateway local (desenvolvimento)
+  - url: https://api.aerozap.com.br
+    description: Produção (ainda não publicada)
+
+security:
+  - jwtDeAcesso: []
+
+tags:
+  - name: sistema
+    description: Verificações de vida e identidade dos serviços.
+
+paths:
+  /api/plataforma/v1/system/ping:
+    get:
+      operationId: pingDaPlataforma
+      tags: [sistema]
+      summary: Confirma que a plataforma responde atrás do gateway.
+      description: |
+        Caminho de ponta a ponta mais curto que existe: passa pelo limitador de taxa, pela
+        validação do token, pelo encaminhamento do gateway e pelo envelope de resposta do serviço.
+        É o que o `dev-gateway-check.sh` usa como prova de que a borda está de pé.
+      responses:
+        '200':
+          description: A plataforma respondeu.
+          headers:
+            X-Correlation-Id:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaDePing'
+              examples:
+                ok:
+                  value:
+                    data:
+                      service: platform-core
+                      status: ok
+                    meta:
+                      correlationId: 3f6c1b7a-9c1e-4a18-9a2f-2c0b8d4e7f11
+                      timestamp: '2026-11-04T18:20:03.512Z'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+        '429':
+          $ref: '#/components/responses/LimiteExcedido'
+        '500':
+          $ref: '#/components/responses/ErroInterno'
+        '504':
+          $ref: '#/components/responses/ServicoSemResposta'
+
+components:
+  securitySchemes:
+    jwtDeAcesso:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token de acesso emitido pelo AeroZap.
+
+  headers:
+    CorrelationId:
+      description: Identificador que liga esta resposta ao log e ao rastro distribuído.
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    # Esquemas publicados: referência ao arquivo, nunca cópia.
+    ApiResponse:
+      $ref: '../schemas/api-response.schema.json'
+    ProblemDetail:
+      $ref: '../schemas/problem-detail.schema.json'
+    SearchIntent:
+      $ref: '../schemas/search-intent.schema.json'
+    FlightOffer:
+      $ref: '../schemas/flight-offer.schema.json'
+    ProviderResult:
+      $ref: '../schemas/provider-result.schema.json'
+    UsageReservationRequest:
+      $ref: '../schemas/usage-reservation-request.schema.json'
+    UsageReservationResponse:
+      $ref: '../schemas/usage-reservation-response.schema.json'
+    EventEnvelope:
+      $ref: '../schemas/event-envelope.schema.json'
+
+    Meta:
+      type: object
+      description: Metadados que acompanham toda resposta de sucesso.
+      required: [correlationId, timestamp]
+      properties:
+        correlationId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    RespostaDePing:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [service, status]
+          properties:
+            service:
+              type: string
+              examples: [platform-core]
+            status:
+              type: string
+              enum: [ok]
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+  responses:
+    NaoAutenticado:
+      description: Token ausente, expirado ou inválido.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            semToken:
+              value:
+                type: urn:aerozap:problem:unauthorized
+                title: Não autenticado
+                status: 401
+                detail: Envie um token de acesso válido.
+                correlationId: 3f6c1b7a-9c1e-4a18-9a2f-2c0b8d4e7f11
+    SemPermissao:
+      description: Token válido, mas sem permissão para o recurso.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    NaoEncontrado:
+      description: Nenhuma rota ou recurso para este caminho.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    LimiteExcedido:
+      description: Limite de requisições da janela atingido.
+      headers:
+        Retry-After:
+          description: Segundos até a próxima janela.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            limite:
+              value:
+                type: urn:aerozap:problem:rate-limited
+                title: Muitas requisições
+                status: 429
+                detail: Aguarde alguns instantes e tente de novo.
+                correlationId: 3f6c1b7a-9c1e-4a18-9a2f-2c0b8d4e7f11
+    ErroInterno:
+      description: Falha não prevista. O detalhe interno nunca é exposto.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    ServicoSemResposta:
+      description: O serviço de destino não respondeu dentro do tempo limite do gateway.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

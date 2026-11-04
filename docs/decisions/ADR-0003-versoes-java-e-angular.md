@@ -55,3 +55,25 @@ um JDK 25** fica comprovada pela CI, que usa o Temurin 25 no fluxo Java.
 **Reversão**, se algo aparecer em produção: trocar `java.version` para 21 no POM pai e a
 `java-version` no fluxo `java-service.yml`. O `scripts/build.sh --java=21` testa o caminho de
 volta sem alterar o POM.
+
+
+## Nota de implementação (2026-11-04) — Angular 22 adotado na AZ-016
+
+A regra desta ADR ("a major estável mais recente que ainda tenha pelo menos 12 meses de suporte
+restante na data de AZ-016") foi aplicada hoje, com a tabela consultada na data, como a própria
+ADR mandava.
+
+**Consulta.** A major mais recente no npm é a **22** (`22.2.4`); a 21 está em `21.2.26`. O Angular
+mudou para um major por ano a partir da **23, prevista para junho de 2027** — não há 23 em 2026.
+A **22 tem suporte ativo até junho de 2027 e LTS até junho de 2028**, cerca de 20 meses restantes.
+A 21 sai de LTS antes disso.
+
+**Decisão.** Angular **22.2.x**, com TypeScript `strict` ligado explicitamente no `tsconfig.json`
+do workspace (o `ng new` da 22 não o liga por padrão). Node **26 LTS** na CI: o 22 saiu do suporte
+ativo e recebe só correção de segurança até abril de 2027.
+
+**Evidência**: `frontend/package.json`, `.github/workflows/frontend.yml`,
+`docs/backlog/reports/AZ-016-delivery-report.md`. Build de produção, 57 testes e lint verdes.
+
+**Reversão**: `ng update @angular/core@21 @angular/cli@21` em tarefa dedicada, como a ADR já prevê
+para mudança de major.
