@@ -1,12 +1,12 @@
 package br.com.aerozap.apigateway.limite;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
+import tools.jackson.databind.ObjectMapper;
 
 /** Monta o limitador e o coloca na frente da cadeia de segurança. */
 @Configuration

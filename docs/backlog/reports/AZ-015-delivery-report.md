@@ -133,6 +133,17 @@ O ambiente está rodando: **não** — depende da execução na máquina do Prod
   é cabeçalho e qualquer um escreve nele. Documentado, desligado por padrão.
 - **Falha em aberto no limite de taxa.** Escolha consciente: disponibilidade acima do limite.
 
+## Correções feitas a partir do primeiro build
+
+Primeira execução (04/11/2026): compilação limpa, testes de unidade e de arquitetura verdes
+(tabela de rotas 5, fronteira 3), e **15 erros de contexto** nos testes de integração, todos com
+a mesma causa: o Spring Boot 4.1 usa **Jackson 3** (`tools.jackson.databind`) e publica o mapeador
+como `JsonMapper`; o código pedia o `ObjectMapper` do Jackson 2 (`com.fasterxml.jackson.databind`),
+que está no classpath por compatibilidade mas não tem bean. Trocado o import nos quatro arquivos
+que escrevem Problem Details direto na resposta.
+
+Fica anotado para os próximos serviços: **em Boot 4, Jackson é `tools.jackson`**.
+
 ## Decisões necessárias
 
 Nenhuma para fechar a tarefa. Para a AZ-020 ficam: formato das permissões no token (papéis ou
