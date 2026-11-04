@@ -38,16 +38,24 @@ jobs:
         run: |
           cp .env.example .env
           docker compose --env-file .env -f infrastructure/compose/docker-compose.yml config --quiet
+          if [ -f infrastructure/monitoring/docker-compose.observabilidade.yml ]; then
+            docker compose --env-file .env \
+              -f infrastructure/compose/docker-compose.yml \
+              -f infrastructure/monitoring/docker-compose.observabilidade.yml config --quiet
+          fi
 
       - name: Todas as imagens com versão fixada (sem latest)
         run: |
-          f=infrastructure/compose/docker-compose.yml
-          if grep -nE '^\s*image:' "$f" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
-            echo "::error::imagem sem tag de versão no Compose"; exit 1
-          fi
-          if grep -n ':latest' "$f"; then
-            echo "::error::tag latest no Compose"; exit 1
-          fi
+          falhou=0
+          for f in $(find infrastructure -name 'docker-compose*.yml' | sort); do
+            if grep -nE '^\s*image:' "$f" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
+              echo "::error file=$f::imagem sem tag de versão"; falhou=1
+            fi
+            if grep -n ':latest' "$f"; then
+              echo "::error file=$f::tag latest"; falhou=1
+            fi
+          done
+          exit "$falhou"
 
       - name: Nenhum arquivo .env versionado
         run: |
