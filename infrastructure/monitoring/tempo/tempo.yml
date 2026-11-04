@@ -1,0 +1,33 @@
+# AeroZap — Tempo (rastros distribuídos) no ambiente local (AZ-013).
+# Recebe OTLP por HTTP (4318) e gRPC (4317). Os serviços Java exportam por HTTP.
+server:
+  http_listen_port: 3200
+  log_level: warn
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+        grpc:
+          endpoint: 0.0.0.0:4317
+
+ingester:
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    # Retenção curta: ambiente local não deve ocupar disco.
+    block_retention: 72h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/blocos
+    wal:
+      path: /var/tempo/wal
+
+usage_report:
+  reporting_enabled: false

@@ -31,12 +31,29 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       probes:
         enabled: true
       show-details: never
+  observations:
+    key-values:
+      servico: ${spring.application.name}
+  metrics:
+    distribution:
+      # Publica os baldes do histograma: sem eles não há percentil por rota no painel.
+      percentiles-histogram:
+        http.server.requests: true
+  tracing:
+    sampling:
+      # Ambiente local: todos os rastros. Em produção, bem menor (ver docs/architecture/observabilidade.md).
+      probability: ${TRACING_AMOSTRAGEM:1.0}
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTLP_TRACES_URL:http://localhost:4318/v1/traces}
 
 springdoc:
   api-docs:

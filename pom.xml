@@ -23,11 +23,13 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <archunit.version>1.4.1</archunit.version>
     <springdoc.version>3.0.0</springdoc.version>
+    <loki4j.version>2.1.0</loki4j.version>
   </properties>
 
   <modules>
     <module>libs/java/event-contracts</module>
     <module>libs/java/service-foundation</module>
+    <module>libs/java/observability-starter</module>
     <module>apps/platform-core</module>
   </modules>
 
@@ -42,6 +44,16 @@
         <groupId>br.com.aerozap</groupId>
         <artifactId>service-foundation</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.com.aerozap</groupId>
+        <artifactId>observability-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.loki4j</groupId>
+        <artifactId>loki-logback-appender</artifactId>
+        <version>${loki4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.tngtech.archunit</groupId>
