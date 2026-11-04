@@ -143,9 +143,21 @@ abaixo de 100%, receptores de alerta de verdade com plantão e escalonamento, e 
 serviço além deste painel único. O que **não** muda: nomes de métrica, mascaramento de log e o
 identificador de correlação — é o que permite comparar ambientes.
 
+## Por que o Tempo está na linha 2.x
+
+O Tempo 3 removeu o ingester e o compactor e passou a ingestão por Kafka, com agendador e
+trabalhadores cuidando de compactação e retenção. É arquitetura para escalar — e num ambiente
+local só acrescenta peça para manter. A linha 2.x continua sendo a de binário único, que é o que
+este Compose quer. A volta para a 3.x é decisão da Fase 7, junto com a operação de produção.
+
+Quem tentar atualizar sem converter a configuração vai ver o contêiner em laço de reinício com
+`field ingester not found in type app.Config` — foi exatamente o que aconteceu em 04/11/2026.
+
 ## Limites conhecidos
 
 - Só o `platform-core` é coletado; cada serviço novo entra como alvo em `prometheus.yml`.
 - Sem exportador do PostgreSQL: a saúde do banco aparece pelo lado do serviço (pool de conexões).
   Um exportador dedicado entra quando houver carga real para observar.
 - O envio de logs ao Loki depende do serviço estar rodando com o perfil `observabilidade`.
+- A pilha leva até um minuto para ficar inteira de pé; por isso `obs-verify.sh` tenta cinco vezes
+  antes de dar algo como falho. Verificar cedo demais acusaria defeito onde só havia demora.

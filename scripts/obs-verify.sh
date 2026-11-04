@@ -15,7 +15,17 @@ FALHAS=0
 
 ok(){ echo "✓ $1"; }
 falhou(){ echo "✗ $1" >&2; FALHAS=$((FALHAS+1)); }
-tenta(){ curl -fsS --max-time 10 "$1" 2>/dev/null; }
+# Tenta algumas vezes: logo depois do obs-up, Grafana e Loki ainda estão terminando de subir,
+# e falhar na primeira tentativa diria "quebrado" quando o certo é "ainda não".
+tenta(){
+  for _ in 1 2 3 4 5; do
+    if curl -fsS --max-time 10 "$1" 2>/dev/null; then
+      return 0
+    fi
+    sleep 3
+  done
+  return 1
+}
 
 {
   echo "=== Verificação da observabilidade — $(date -Iseconds) ==="
