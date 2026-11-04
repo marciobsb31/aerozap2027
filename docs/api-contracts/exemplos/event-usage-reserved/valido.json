@@ -1,0 +1,9 @@
+{
+  "reservationId": "rsv_01HZ",
+  "userId": "usr_01HZ",
+  "searchId": "sch_01HZ",
+  "periodId": "per_2026T3",
+  "remaining": 4,
+  "reservedAt": "2026-07-01T13:22:00Z",
+  "expiresAt": "2026-07-01T13:30:00Z"
+}

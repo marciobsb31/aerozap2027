@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/search-intent.schema.json",
+  "title": "SearchIntent",
+  "description": "O que a pessoa quer pesquisar, já estruturado. Produzido pelo formulário da Web, pelo interpretador de linguagem natural e pelo WhatsApp.",
+  "type": "object",
+  "required": [
+    "origin",
+    "destination",
+    "departureDate",
+    "passengers"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "origin": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "Aeroporto ou cidade de origem, código IATA."
+    },
+    "destination": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "Destino, código IATA. Diferente da origem."
+    },
+    "departureDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "returnDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "description": "Ausente ou nulo em ida simples. Nunca anterior à ida."
+    },
+    "passengers": {
+      "type": "object",
+      "required": [
+        "adults"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "adults": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9
+        },
+        "children": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "infants": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "description": "Nunca mais que adults: bebê no colo."
+        }
+      },
+      "description": "Soma de adults, children e infants não passa de 9."
+    },
+    "cabin": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "ECONOMY",
+        "PREMIUM_ECONOMY",
+        "BUSINESS",
+        "FIRST",
+        null
+      ],
+      "description": "Ausente significa ECONOMY."
+    },
+    "currency": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Ausente significa BRL."
+    },
+    "maxStops": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "preferredAirlines": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z0-9]{2}$"
+      }
+    },
+    "maxPrice": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "locale": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "pt-BR",
+        "es",
+        null
+      ],
+      "description": "Ausente significa pt-BR."
+    }
+  }
+}

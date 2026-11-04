@@ -1,0 +1,42 @@
+{
+  "offerId": "of_01HZ8K",
+  "provider": "",
+  "demo": false,
+  "totalPrice": {
+    "amount": 4820.35,
+    "currency": "BRL"
+  },
+  "itineraries": [
+    {
+      "segments": [
+        {
+          "origin": "GRU",
+          "destination": "LIS",
+          "departure": "2026-07-10T22:15:00Z",
+          "arrival": "2026-07-11T10:40:00Z",
+          "marketingCarrier": "TP",
+          "flightNumber": "088",
+          "cabin": "ECONOMY",
+          "aircraft": "A339"
+        }
+      ]
+    },
+    {
+      "segments": [
+        {
+          "origin": "LIS",
+          "destination": "GRU",
+          "departure": "2026-07-20T11:05:00Z",
+          "arrival": "2026-07-20T20:30:00Z",
+          "marketingCarrier": "TP",
+          "flightNumber": "087",
+          "cabin": "ECONOMY",
+          "aircraft": "A339"
+        }
+      ]
+    }
+  ],
+  "deepLink": "https://exemplo-provedor/oferta/01HZ8K",
+  "fareConditions": "1 bagagem de mão; despachada não inclusa; alteração com taxa",
+  "checkedAt": "2026-07-01T13:22:10Z"
+}

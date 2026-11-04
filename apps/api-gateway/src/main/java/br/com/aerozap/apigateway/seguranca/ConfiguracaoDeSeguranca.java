@@ -1,5 +1,6 @@
 package br.com.aerozap.apigateway.seguranca;
 
+import br.com.aerozap.contracts.ProblemTypes;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +54,10 @@ public class ConfiguracaoDeSeguranca {
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(Customizer.withDefaults())
                         .authenticationEntryPoint((req, resp, ex) -> ProblemaHttp.escrever(resp, json,
-                                HttpStatus.UNAUTHORIZED, "unauthorized", "Não autenticado",
+                                HttpStatus.UNAUTHORIZED, ProblemTypes.NAO_AUTENTICADO, "Não autenticado",
                                 "Apresente um token de acesso válido no cabeçalho Authorization."))
                         .accessDeniedHandler((req, resp, ex) -> ProblemaHttp.escrever(resp, json,
-                                HttpStatus.FORBIDDEN, "forbidden", "Acesso negado",
+                                HttpStatus.FORBIDDEN, ProblemTypes.ACESSO_NEGADO, "Acesso negado",
                                 "O token é válido, mas não permite esta operação.")))
                 .build();
     }

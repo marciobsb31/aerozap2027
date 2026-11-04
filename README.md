@@ -207,6 +207,7 @@ podem gravar no mesmo disco do projeto.
 | [`docs/decisions/`](docs/decisions/) | ADRs e [decisões em aberto](docs/decisions/decisoes-em-aberto.md) |
 | [`docs/architecture/convencoes.md`](docs/architecture/convencoes.md) | Branches, commits e pull requests |
 | [`docs/architecture/esqueleto-servico-java.md`](docs/architecture/esqueleto-servico-java.md) | Esqueleto padrão de serviço: Outbox, DLQ, Problem Details, correlação |
+| [`docs/api-contracts/`](docs/api-contracts/README.md) | Contratos v0: `SearchIntent`, `FlightOffer`, eventos, erros |
 | [`docs/architecture/api-gateway.md`](docs/architecture/api-gateway.md) | Borda: token, limite de taxa, correlação e roteamento |
 | [`docs/architecture/observabilidade.md`](docs/architecture/observabilidade.md) | Métricas, logs mascarados, rastros e alertas |
 | [`docs/architecture/ci.md`](docs/architecture/ci.md) | Pipelines, caches e proteções de branch |

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/problem-detail.schema.json",
+  "title": "ProblemDetail",
+  "description": "Erro no formato RFC 9457, com o identificador de correlação.",
+  "type": "object",
+  "required": [
+    "type",
+    "title",
+    "status"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "pattern": "^urn:aerozap:problem:[a-z-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "detail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Para a pessoa ler. Nunca detalhe interno."
+    },
+    "instance": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "description": "Liga a resposta ao log e ao rastro."
+    }
+  }
+}

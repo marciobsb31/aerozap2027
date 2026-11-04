@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/usage-reservation-request.schema.json",
+  "title": "ReservationRequest",
+  "description": "POST /internal/usage/reservations (ADR-0004).",
+  "type": "object",
+  "required": [
+    "userId",
+    "searchId",
+    "idempotencyKey"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "userId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "searchId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repetir com a mesma chave devolve a mesma reserva."
+    }
+  }
+}
