@@ -77,6 +77,13 @@ precisou de ajuste. Aprovado pelo CTO como parte desta entrega.
 
 ## Testes
 
+**Execução na máquina do Product Owner (04/11/2026, 15:29):** `dev-gateway-check` verde de ponta
+a ponta — `✓ sem token: 401`, `✓ resposta do serviço chegou pela borda`, `✓ correlação preservada
+de ponta a ponta`, `✓ limite de taxa respondeu 429` (requisições 6 a 9 bloqueadas com limite 5),
+fechando `✓ Borda verificada: autenticação, encaminhamento, correlação e limite de taxa`.
+Evidência em `logs/dev-gateway-check.log`. O build completo também passou na máquina, com JDK 25
+como alvo.
+
 - Unitários: **PASS** esperado — tabela de rotas (prefixo específico, prefixo parcial que não
   casa, validação que falha na subida) e arquitetura de fronteira.
 - Integração: **PASS** esperado — 6 testes de autenticação (sem token, assinatura errada,
@@ -106,11 +113,11 @@ O script sobe a infraestrutura, o `platform-core` e a borda, assina um token de 
 volta pela borda com a correlação preservada, e o limite de taxa responde 429. Evidência em
 `logs/dev-gateway-check.log`.
 
-O ambiente está rodando: **não** — depende da execução na máquina do Product Owner.
+O ambiente está rodando: **sim**, verificado em 04/11/2026 na máquina do Product Owner.
 
 ## Evidências
 
-- `logs/dev-gateway-check.log` (a anexar depois da execução)
+- `logs/dev-gateway-check.log` (04/11/2026): os três critérios de aceite comprovados
 - `logs/build.log` (a anexar: compilação e testes do módulo novo)
 - Diagrama e decisões em `docs/architecture/api-gateway.md`
 
@@ -152,7 +159,8 @@ escopos) e passagem para JWKS.
 ## Checklist de pronto
 
 - [x] Critérios de aceite atendidos no código, na documentação e nos testes
-- [ ] Testes passando em CI (depende do push e da primeira execução do fluxo Java na CI)
+- [x] Testes passando na máquina do Product Owner (`dev-gateway-check` verde em 04/11/2026)
+- [ ] Testes passando em CI (depende da fila do GitHub Actions)
 - [x] Documentação atualizada
 - [x] Sem credenciais, sem dados reais de usuários
 - [x] Dados de demonstração rotulados (não há)
