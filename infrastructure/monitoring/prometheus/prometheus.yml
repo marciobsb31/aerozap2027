@@ -27,6 +27,9 @@ scrape_configs:
       - targets: ["host.docker.internal:8081"]
         labels:
           servico: platform-core
+      - targets: ["host.docker.internal:8080"]
+        labels:
+          servico: api-gateway
 
   # RabbitMQ: métricas agregadas do nó.
   - job_name: rabbitmq
