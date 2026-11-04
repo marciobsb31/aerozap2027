@@ -7,7 +7,7 @@ erro(){ echo "✗ $1" >&2; FALHAS=$((FALHAS+1)); }
 
 passo "Lint dos scripts de shell"
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S warning scripts/*.sh && echo "✓ shellcheck" || erro "shellcheck"
+  shellcheck -S warning scripts/*.sh scripts/lib/*.sh && echo "✓ shellcheck" || erro "shellcheck"
 else
   echo "• shellcheck não instalado; o CI executa este passo."
 fi
