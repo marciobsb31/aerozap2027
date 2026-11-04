@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AeroZap — base de log dos serviços (AZ-013).
+
+  Inclua em cada serviço, no logback-spring.xml:
+      <configuration>
+        <include resource="br/com/aerozap/observability/logback-base.xml"/>
+      </configuration>
+
+  O que isto garante:
+    - %msgSeguro: a mensagem passa pelo mascarador antes de sair (nenhum destino recebe
+      telefone, e-mail, CPF, cartão ou credencial).
+    - Console sempre legível, com o identificador de correlação.
+    - Com o perfil "observabilidade" ativo, os logs também vão para o Loki (logfmt, com
+      service_name e nível como rótulos). Sem o perfil, nada sai da máquina.
+-->
+<included>
+  <conversionRule conversionWord="msgSeguro"
+                  converterClass="br.com.aerozap.observability.logging.MensagemMascaradaConverter"/>
+
+  <springProperty scope="context" name="NOME_SERVICO" source="spring.application.name" defaultValue="aerozap"/>
+  <property name="URL_LOKI" value="${LOKI_URL:-http://localhost:3100/loki/api/v1/push}"/>
+  <property name="NIVEL_RAIZ" value="${LOG_NIVEL:-INFO}"/>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level [${NOME_SERVICO}] [%X{correlationId:-sem-correlacao}] %logger{32} - %msgSeguro%n%ex</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+    <http>
+      <url>${URL_LOKI}</url>
+    </http>
+    <batchMaxItems>200</batchMaxItems>
+    <batchTimeoutMs>5000</batchTimeoutMs>
+    <format>
+      <label>
+        <pattern>service_name=${NOME_SERVICO},nivel=%level</pattern>
+      </label>
+      <message>
+        <pattern>nivel=%level logger=%logger correlationId=%X{correlationId:-} traceId=%X{traceId:-} spanId=%X{spanId:-} msg=%msgSeguro%n%ex</pattern>
+      </message>
+    </format>
+  </appender>
+
+  <springProfile name="!observabilidade">
+    <root level="${NIVEL_RAIZ}">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="observabilidade">
+    <root level="${NIVEL_RAIZ}">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="LOKI"/>
+    </root>
+  </springProfile>
+</included>

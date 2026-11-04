@@ -1,0 +1,58 @@
+# AeroZap — alertas mínimos do ambiente local (AZ-013).
+# Produção terá limites próprios; aqui o objetivo é provar o caminho Prometheus → Alertmanager.
+groups:
+  - name: aerozap-servicos
+    rules:
+      - alert: ServicoIndisponivel
+        expr: up{job="aerozap-servicos"} == 0
+        for: 2m
+        labels:
+          severidade: critico
+        annotations:
+          resumo: "Serviço {{ $labels.servico }} não responde"
+          descricao: "O Prometheus não coleta métricas de {{ $labels.servico }} há 2 minutos."
+
+      - alert: TaxaDeErro5xxAlta
+        expr: |
+          sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m]))
+            /
+          clamp_min(sum(rate(http_server_requests_seconds_count[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severidade: alto
+        annotations:
+          resumo: "Mais de 5% das respostas são 5xx"
+          descricao: "Taxa de erro de servidor acima de 5% nos últimos 5 minutos."
+
+  - name: aerozap-mensageria
+    rules:
+      - alert: FilaMortaComMensagens
+        expr: sum by (queue) (rabbitmq_detailed_queue_messages_ready{queue=~".+\\.dlq"}) > 0
+        for: 1m
+        labels:
+          severidade: alto
+        annotations:
+          resumo: "Mensagens na fila morta {{ $labels.queue }}"
+          descricao: "Há mensagens na DLQ. Investigue o consumidor antes de reprocessar."
+
+      - alert: OutboxAcumulando
+        expr: aerozap_outbox_pendentes > 100
+        for: 5m
+        labels:
+          severidade: alto
+        annotations:
+          resumo: "Outbox com {{ $value }} eventos pendentes"
+          descricao: "O publicador do Outbox não está vazando a fila. Verifique a conexão com o RabbitMQ."
+
+  # Grupo de verificação: dispara sempre, de propósito, para comprovar que o caminho
+  # Prometheus → Alertmanager funciona (critério de aceite da AZ-013).
+  # Para silenciar, comente este grupo e recarregue o Prometheus.
+  - name: aerozap-teste
+    rules:
+      - alert: AlertaDeTeste
+        expr: vector(1)
+        labels:
+          severidade: info
+        annotations:
+          resumo: "Alerta de teste da observabilidade (AZ-013)"
+          descricao: "Alerta proposital. Se aparece no Alertmanager, o caminho de alertas está íntegro."

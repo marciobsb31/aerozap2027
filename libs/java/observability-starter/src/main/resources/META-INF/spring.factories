@@ -1,0 +1,3 @@
+# Mascaramento de dados sensíveis no log estruturado (JSON) de todos os serviços.
+org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer=\
+br.com.aerozap.observability.logging.MascaraNoLogEstruturado

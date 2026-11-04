@@ -1,0 +1,22 @@
+# AeroZap — roteamento de alertas no ambiente local (AZ-013).
+# O receptor "descartar" não tem integração: o alerta fica visível na interface do
+# Alertmanager (http://localhost:9093) e não sai da máquina. Em produção, cada
+# severidade vai para o canal definido na Fase 7 (plantão), nunca com segredos no repositório.
+route:
+  receiver: descartar
+  group_by: [alertname, servico, queue]
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+
+receivers:
+  - name: descartar
+    # Exemplo de integração (produção; a URL vem de variável de ambiente, nunca do repositório):
+    # webhook_configs:
+    #   - url: https://exemplo-interno/alertas
+
+inhibit_rules:
+  # Um serviço fora do ar já explica a taxa de erro; não avisa duas vezes.
+  - source_matchers: [severidade = "critico"]
+    target_matchers: [severidade = "alto"]
+    equal: [servico]

@@ -154,7 +154,8 @@ O plano completo, com 61 tarefas, está em [`docs/architecture/plano-de-implemen
 
 ## 🚀 Como começar
 
-> 🧱 O projeto está na **Fase 1 (Fundação)**. Ainda **não há aplicação rodando**: o ambiente local com `docker compose up` chega na tarefa **AZ-011**.
+> 🧱 O projeto está na **Fase 1 (Fundação)**. O ambiente local já sobe com um comando e o
+> esqueleto de serviço Java já responde; as telas e as regras de negócio vêm nos marcos seguintes.
 
 ```bash
 # 1. clonar
@@ -163,9 +164,34 @@ cd aerozap2027
 
 # 2. configurar variáveis locais (nunca versione o .env)
 cp .env.example .env
+
+# 3. subir o ambiente (PostgreSQL, RabbitMQ, Redis e armazenamento de objetos)
+bash scripts/dev-up.sh          # e, para verificar de fato: bash scripts/dev-verify.sh
+
+# 4. compilar e testar os módulos Java
+bash scripts/build.sh           # use --sem-docker para pular os testes de integração
+
+# 5. opcional: observabilidade (Prometheus, Grafana, Loki, Tempo, Alertmanager)
+bash scripts/obs-up.sh          # e: bash scripts/obs-verify.sh
 ```
 
-**Pré-requisitos previstos:** JDK 25, Maven, Node.js (LTS) com npm, Docker e Docker Compose.
+| Script | Para quê |
+|---|---|
+| `scripts/dev-up.sh` / `dev-down.sh` | sobe e derruba o ambiente local |
+| `scripts/dev-verify.sh` | prova que cada serviço responde de verdade |
+| `scripts/dev-check.sh` | sobe, verifica e grava tudo em `logs/dev-check.log` |
+| `scripts/build.sh` | compila e testa os módulos Java |
+| `scripts/ci-local.sh` | roda localmente as verificações do CI |
+| `scripts/obs-up.sh` / `obs-verify.sh` / `obs-down.sh` | observabilidade |
+| `scripts/probe-tags.sh` | lista versões publicadas das imagens (nenhuma tag `latest`) |
+
+**Pré-requisitos:** JDK 21 ou mais novo (o projeto compila para 21; o alvo final é o 25, ver
+[ADR-0003](docs/decisions/ADR-0003-versoes-java-e-angular.md)), Maven 3.9+, Docker e Docker Compose.
+Node.js (LTS) com npm entra junto com o front-end.
+
+Pouco espaço no disco do sistema? Veja
+[ambiente local no Windows](docs/architecture/ambiente-local-windows.md): Docker, Maven e npm
+podem gravar no mesmo disco do projeto.
 
 ---
 
@@ -178,6 +204,10 @@ cp .env.example .env
 | [`docs/prd/PRD-v1.md`](docs/prd/PRD-v1.md) | Requisitos, jornadas e regras de negócio |
 | [`docs/decisions/`](docs/decisions/) | ADRs e [decisões em aberto](docs/decisions/decisoes-em-aberto.md) |
 | [`docs/architecture/convencoes.md`](docs/architecture/convencoes.md) | Branches, commits e pull requests |
+| [`docs/architecture/esqueleto-servico-java.md`](docs/architecture/esqueleto-servico-java.md) | Esqueleto padrão de serviço: Outbox, DLQ, Problem Details, correlação |
+| [`docs/architecture/observabilidade.md`](docs/architecture/observabilidade.md) | Métricas, logs mascarados, rastros e alertas |
+| [`docs/architecture/ci.md`](docs/architecture/ci.md) | Pipelines, caches e proteções de branch |
+| [`docs/architecture/ambiente-local-windows.md`](docs/architecture/ambiente-local-windows.md) | Manter Docker, Maven e npm fora do disco do sistema |
 | [`docs/architecture/relatorio-m0.md`](docs/architecture/relatorio-m0.md) | Resultado da Fase 0 |
 
 ---
