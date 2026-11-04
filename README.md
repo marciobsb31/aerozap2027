@@ -182,6 +182,8 @@ bash scripts/obs-up.sh          # e: bash scripts/obs-verify.sh
 | `scripts/dev-check.sh` | sobe, verifica e grava tudo em `logs/dev-check.log` |
 | `scripts/build.sh` | compila e testa os módulos Java |
 | `scripts/ci-local.sh` | roda localmente as verificações do CI |
+| `scripts/dev-service-check.sh` | sobe o platform-core e confere health, ping e OpenAPI |
+| `scripts/dev-gateway-check.sh` | sobe a borda e prova token, encaminhamento e limite de taxa |
 | `scripts/obs-up.sh` / `obs-verify.sh` / `obs-down.sh` | observabilidade |
 | `scripts/probe-tags.sh` | lista versões publicadas das imagens (nenhuma tag `latest`) |
 
@@ -205,6 +207,7 @@ podem gravar no mesmo disco do projeto.
 | [`docs/decisions/`](docs/decisions/) | ADRs e [decisões em aberto](docs/decisions/decisoes-em-aberto.md) |
 | [`docs/architecture/convencoes.md`](docs/architecture/convencoes.md) | Branches, commits e pull requests |
 | [`docs/architecture/esqueleto-servico-java.md`](docs/architecture/esqueleto-servico-java.md) | Esqueleto padrão de serviço: Outbox, DLQ, Problem Details, correlação |
+| [`docs/architecture/api-gateway.md`](docs/architecture/api-gateway.md) | Borda: token, limite de taxa, correlação e roteamento |
 | [`docs/architecture/observabilidade.md`](docs/architecture/observabilidade.md) | Métricas, logs mascarados, rastros e alertas |
 | [`docs/architecture/ci.md`](docs/architecture/ci.md) | Pipelines, caches e proteções de branch |
 | [`docs/architecture/ambiente-local-windows.md`](docs/architecture/ambiente-local-windows.md) | Manter Docker, Maven e npm fora do disco do sistema |

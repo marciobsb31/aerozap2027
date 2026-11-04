@@ -32,6 +32,7 @@
     <module>libs/java/service-foundation</module>
     <module>libs/java/observability-starter</module>
     <module>apps/platform-core</module>
+    <module>apps/api-gateway</module>
   </modules>
 
   <dependencyManagement>
