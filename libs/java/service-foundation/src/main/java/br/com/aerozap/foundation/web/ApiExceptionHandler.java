@@ -33,12 +33,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return problem;
     }
 
+    /**
+     * Único ponto por onde passam todos os erros tratados pelo Spring MVC, já com o corpo
+     * montado. Em {@code handleExceptionInternal} o corpo ainda pode vir nulo — é a classe base
+     * que cria o ProblemDetail depois —, e aí a correlação não chegava ao cliente nas respostas
+     * geradas por exceção (404, 405, 400 e as demais).
+     */
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-                                                             HttpStatusCode statusCode, WebRequest request) {
+    protected ResponseEntity<Object> createResponseEntity(Object body, HttpHeaders headers,
+                                                          HttpStatusCode statusCode, WebRequest request) {
         if (body instanceof ProblemDetail problem) {
             problem.setProperty("correlationId", CorrelationIds.current());
         }
-        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+        return super.createResponseEntity(body, headers, statusCode, request);
     }
 }

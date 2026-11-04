@@ -11,11 +11,13 @@ import br.com.aerozap.foundation.web.CorrelationIdFilter;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 class WebFoundationTest {
 
@@ -29,6 +31,11 @@ class WebFoundationTest {
         @GetMapping("/boom")
         String boom() {
             throw new IllegalStateException("segredo interno que não pode vazar");
+        }
+
+        @GetMapping("/ausente")
+        String ausente() {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Não existe.");
         }
     }
 
@@ -67,5 +74,18 @@ class WebFoundationTest {
                 .andExpect(jsonPath("$.correlationId").value("corr-9"))
                 .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.not(
                         org.hamcrest.Matchers.containsString("segredo"))));
+    }
+
+    /**
+     * Erros que o próprio Spring MVC monta (404, 405, 400) passam por outro caminho, no qual o
+     * corpo só é criado depois. Sem este teste, a correlação sumia justamente nas respostas de
+     * erro mais comuns — e é nelas que o cliente mais precisa do código para pedir suporte.
+     */
+    @Test
+    void erroGeradoPorExcecaoTambemCarregaACorrelacao() throws Exception {
+        mvc.perform(get("/ausente").header("X-Correlation-Id", "corr-404"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.correlationId").value("corr-404"));
     }
 }
