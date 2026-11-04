@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Compila e testa todos os módulos Java e grava a saída em logs/build.log (pasta não versionada).
 # Requisitos: JDK 21+, Maven e, para os testes de integração, Docker em execução (Testcontainers).
-# Opção: --sem-docker pula os testes *IntegrationTest (só compila e roda os testes unitários).
+# Opções (podem ser combinadas):
+#   --sem-docker  pula os testes *IntegrationTest (só compila e roda os testes unitários)
+#   --java25      compila para o Java 25 em lugar do 21, sem alterar o pom (spike da ADR-0003)
 cd "$(dirname "$0")/.." || exit 1
 mkdir -p logs
 
@@ -25,14 +27,31 @@ MAVEN_REPO_ARGS=()
 configurar_repositorio_maven || exit 1
 
 ARGS=(-B -ntp verify)
-if [ "${1:-}" = "--sem-docker" ]; then
-  ARGS+=("-Dtest=!*IntegrationTest" "-Dsurefire.failIfNoSpecifiedTests=false")
-fi
+ALVO_JAVA="21 (padrão do projeto)"
+for opcao in "$@"; do
+  case "$opcao" in
+    --sem-docker)
+      ARGS+=("-Dtest=!*IntegrationTest" "-Dsurefire.failIfNoSpecifiedTests=false")
+      echo "• Pulando os testes de integração (sem Docker)."
+      ;;
+    --java25)
+      # Spike da ADR-0003: compila para o Java 25 sem mexer no pom.
+      ARGS+=("-Djava.version=25")
+      ALVO_JAVA="25 (spike da ADR-0003)"
+      echo "• Spike: compilando para o Java 25."
+      ;;
+    *)
+      echo "✗ Opção desconhecida: $opcao. Use --sem-docker e/ou --java25." >&2
+      exit 2
+      ;;
+  esac
+done
 
 {
   echo "=== AeroZap build — $(date -Iseconds) ==="
   echo "JAVA_HOME=$JAVA_HOME"
   echo "Repositório local do Maven: ${MAVEN_REPO_LOCAL:-padrão (~/.m2/repository)}"
+  echo "Alvo de compilação: Java $ALVO_JAVA"
   type -a java mvn 2>&1 | head -n 6
   java -version
   mvn -v
