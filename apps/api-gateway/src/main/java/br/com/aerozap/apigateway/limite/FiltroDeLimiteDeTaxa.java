@@ -1,7 +1,6 @@
 package br.com.aerozap.apigateway.limite;
 
 import br.com.aerozap.apigateway.seguranca.ProblemaHttp;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +9,7 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Aplica o limite de taxa antes da autenticação, para que um ataque com tokens inválidos também

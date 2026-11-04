@@ -1,13 +1,13 @@
 package br.com.aerozap.apigateway.seguranca;
 
 import br.com.aerozap.foundation.web.CorrelationIds;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Escreve erros no formato Problem Details (RFC 9457) direto na resposta.
