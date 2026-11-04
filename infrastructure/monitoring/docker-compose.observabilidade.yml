@@ -89,7 +89,10 @@ services:
     networks: [aerozap-net]
 
   tempo:
-    image: grafana/tempo:3.1.1
+    # Linha 2.x de propósito. O Tempo 3 removeu ingester e compactor e passou a ingestão por
+    # Kafka, com agendador e trabalhadores de manutenção: arquitetura para escalar, que num
+    # ambiente local só acrescenta peça. Volta a 3.x quando a produção pedir (Fase 7).
+    image: grafana/tempo:2.10.10
     container_name: aerozap-tempo
     restart: unless-stopped
     user: "0:0"
@@ -117,6 +120,8 @@ services:
       GF_ANALYTICS_REPORTING_ENABLED: "false"
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
       GF_LOG_LEVEL: warn
+      # Sem internet no contêiner, a pré-instalação de plugins falha em DNS e atrasa a subida.
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
       # Abre direto no painel de saúde.
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards-aerozap/aerozap-saude.json
     ports:

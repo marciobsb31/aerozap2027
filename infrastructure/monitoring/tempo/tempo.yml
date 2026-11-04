@@ -28,3 +28,7 @@ storage:
       path: /var/tempo/blocos
     wal:
       path: /var/tempo/wal
+
+# Não envia telemetria de uso para fora.
+usage_report:
+  reporting_enabled: false

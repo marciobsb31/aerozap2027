@@ -140,6 +140,24 @@ de desenvolvimento não tem Docker).
 - `obs-verify.sh` passou a conferir o plugin `rabbitmq_prometheus` por
   `rabbitmq-plugins list -e`, sem passar caminho (o Git Bash converte caminhos em argumentos).
 
+## Correções feitas a partir da primeira execução com Docker (04/11/2026)
+
+A pilha subiu, e três coisas apareceram:
+
+- **Tempo em laço de reinício.** `field ingester not found in type app.Config`: o Tempo 3 removeu
+  ingester e compactor e mudou para ingestão por Kafka. Fixado na linha **2.10.10**, que é a de
+  binário único; a volta para a 3.x é decisão da Fase 7.
+- **Grafana parecia fora do ar e não estava.** O contêiner sobe saudável, mas gasta dezenas de
+  segundos tentando pré-instalar plugins contra `grafana.com`, sem internet no contêiner.
+  Pré-instalação desligada, e a verificação passou a tentar cinco vezes antes de acusar falha.
+- **Verificação do Loki rígida demais.** O `/ready` responde 503 enquanto o ingester aquece e,
+  sem nenhum log gravado, a consulta de rótulos volta com sucesso mas sem o campo `data`. Os dois
+  casos eram normais e eram tratados como falha.
+
+O que já estava comprovado nessa mesma execução: Prometheus e Alertmanager de pé, **alerta de
+teste chegando ao Alertmanager**, RabbitMQ coletado com o plugin `rabbitmq_prometheus` ativo e as
+métricas por fila disponíveis.
+
 ## Decisões necessárias
 
 Nenhuma para fechar a tarefa. Para a Fase 7 ficam registradas: taxa de amostragem de rastros em
