@@ -39,7 +39,7 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 | AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | BACKLOG | [AZ-016](tasks/AZ-016.md) |
 | AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | REVIEW | [AZ-017](tasks/AZ-017.md) |
 | AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | BACKLOG | [AZ-018](tasks/AZ-018.md) |
-| AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | BACKLOG | [AZ-019](tasks/AZ-019.md) |
+| AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | REVIEW | [AZ-019](tasks/AZ-019.md) |
 
 ## Fase 2 — Identidade, planos e franquia (marco M2)
 

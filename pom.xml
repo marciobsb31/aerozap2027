@@ -33,6 +33,7 @@
     <module>libs/java/observability-starter</module>
     <module>apps/platform-core</module>
     <module>apps/api-gateway</module>
+    <module>apps/conversation-ai</module>
   </modules>
 
   <dependencyManagement>
