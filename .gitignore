@@ -48,6 +48,12 @@ infrastructure/**/data/
 *.log
 logs/
 
+# Área de trabalho local (scripts de diagnóstico, rascunhos). Nunca versionada.
+.scratch/
+
+# Caches locais mantidos no mesmo disco do projeto (ver MAVEN_REPO_LOCAL no .env)
+.cache/
+
 # Testes e relatórios
 test-results/
 playwright-report/
