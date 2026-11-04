@@ -8,11 +8,11 @@ if [ "${1:-}" = "--apagar-dados" ]; then
   ARGS+=(--volumes)
   echo "• As métricas, logs e rastros locais serão apagados."
 fi
-docker compose --env-file .env \
+docker compose --env-file .env --project-directory . \
   -f infrastructure/compose/docker-compose.yml \
   -f infrastructure/monitoring/docker-compose.observabilidade.yml \
   stop prometheus alertmanager grafana loki tempo
-docker compose --env-file .env \
+docker compose --env-file .env --project-directory . \
   -f infrastructure/compose/docker-compose.yml \
   -f infrastructure/monitoring/docker-compose.observabilidade.yml \
   rm -f prometheus alertmanager grafana loki tempo

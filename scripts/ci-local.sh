@@ -17,7 +17,7 @@ TMP_ENV=$(mktemp)
 cp .env.example "$TMP_ENV"
 docker compose --env-file "$TMP_ENV" -f infrastructure/compose/docker-compose.yml config --quiet && echo "✓ compose config (base)" || erro "compose config (base)"
 if [ -f infrastructure/monitoring/docker-compose.observabilidade.yml ]; then
-  docker compose --env-file "$TMP_ENV" \
+  docker compose --env-file "$TMP_ENV" --project-directory . \
     -f infrastructure/compose/docker-compose.yml \
     -f infrastructure/monitoring/docker-compose.observabilidade.yml config --quiet \
     && echo "✓ compose config (base + observabilidade)" || erro "compose config (observabilidade)"

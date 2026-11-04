@@ -17,7 +17,7 @@ fi
 
 set -a; . ./.env; set +a
 
-COMPOSE=(docker compose --env-file .env
+COMPOSE=(docker compose --env-file .env --project-directory .
   -f infrastructure/compose/docker-compose.yml
   -f infrastructure/monitoring/docker-compose.observabilidade.yml)
 

@@ -39,7 +39,7 @@ jobs:
           cp .env.example .env
           docker compose --env-file .env -f infrastructure/compose/docker-compose.yml config --quiet
           if [ -f infrastructure/monitoring/docker-compose.observabilidade.yml ]; then
-            docker compose --env-file .env \
+            docker compose --env-file .env --project-directory . \
               -f infrastructure/compose/docker-compose.yml \
               -f infrastructure/monitoring/docker-compose.observabilidade.yml config --quiet
           fi
