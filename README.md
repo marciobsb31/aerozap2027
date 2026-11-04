@@ -189,8 +189,9 @@ bash scripts/obs-up.sh          # e: bash scripts/obs-verify.sh
 [ADR-0003](docs/decisions/ADR-0003-versoes-java-e-angular.md)), Maven 3.9+, Docker e Docker Compose.
 Node.js (LTS) com npm entra junto com o front-end.
 
-Dica para quem tem pouco espaço no disco do sistema: defina `MAVEN_REPO_LOCAL` no `.env` para
-manter o cache de dependências no mesmo disco do projeto.
+Pouco espaço no disco do sistema? Veja
+[ambiente local no Windows](docs/architecture/ambiente-local-windows.md): Docker, Maven e npm
+podem gravar no mesmo disco do projeto.
 
 ---
 
@@ -206,6 +207,7 @@ manter o cache de dependências no mesmo disco do projeto.
 | [`docs/architecture/esqueleto-servico-java.md`](docs/architecture/esqueleto-servico-java.md) | Esqueleto padrão de serviço: Outbox, DLQ, Problem Details, correlação |
 | [`docs/architecture/observabilidade.md`](docs/architecture/observabilidade.md) | Métricas, logs mascarados, rastros e alertas |
 | [`docs/architecture/ci.md`](docs/architecture/ci.md) | Pipelines, caches e proteções de branch |
+| [`docs/architecture/ambiente-local-windows.md`](docs/architecture/ambiente-local-windows.md) | Manter Docker, Maven e npm fora do disco do sistema |
 | [`docs/architecture/relatorio-m0.md`](docs/architecture/relatorio-m0.md) | Resultado da Fase 0 |
 
 ---
