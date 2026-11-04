@@ -13,9 +13,22 @@
   <description>Contratos de eventos compartilhados. Sem dependências e sem regra de negócio de domínio.</description>
 
   <dependencies>
+    <!-- Só nos testes: os contratos são Java puro, sem dependência de biblioteca de JSON.
+         O teste de contrato usa Jackson para provar que os exemplos publicados em
+         docs/api-contracts/exemplos casam com os tipos. -->
+    <dependency>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

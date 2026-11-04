@@ -21,10 +21,13 @@ public final class ProblemaHttp {
     private ProblemaHttp() {
     }
 
+    /**
+     * @param tipo valor do catálogo {@link br.com.aerozap.contracts.ProblemTypes}, nunca um texto solto
+     */
     public static void escrever(HttpServletResponse resposta, ObjectMapper json, HttpStatus status,
                                 String tipo, String titulo, String detalhe) throws IOException {
         ProblemDetail problema = ProblemDetail.forStatusAndDetail(status, detalhe);
-        problema.setType(URI.create("urn:aerozap:problem:" + tipo));
+        problema.setType(URI.create(tipo));
         problema.setTitle(titulo);
         problema.setProperty("correlationId", CorrelationIds.current());
 

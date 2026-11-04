@@ -1,5 +1,6 @@
 package br.com.aerozap.foundation.web;
 
+import br.com.aerozap.contracts.ProblemTypes;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Erro não tratado", ex);
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Erro interno. Informe o código de correlação ao suporte.");
-        problem.setType(URI.create("urn:aerozap:problem:internal-error"));
+        problem.setType(URI.create(ProblemTypes.ERRO_INTERNO));
         problem.setTitle("Erro interno");
         problem.setProperty("correlationId", CorrelationIds.current());
         return problem;

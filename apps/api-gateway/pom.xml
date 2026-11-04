@@ -13,6 +13,11 @@
   <description>Borda: valida o token de entrada, limita a taxa, propaga a correlação e encaminha para os serviços (ADR-0002). Sem regra de negócio.</description>
 
   <dependencies>
+    <!-- Catálogo de erros e contratos compartilhados; declarado, não herdado por transitividade. -->
+    <dependency>
+      <groupId>br.com.aerozap</groupId>
+      <artifactId>event-contracts</artifactId>
+    </dependency>
     <dependency>
       <groupId>br.com.aerozap</groupId>
       <artifactId>service-foundation</artifactId>

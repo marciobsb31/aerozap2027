@@ -1,6 +1,7 @@
 package br.com.aerozap.apigateway.limite;
 
 import br.com.aerozap.apigateway.seguranca.ProblemaHttp;
+import br.com.aerozap.contracts.ProblemTypes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +55,7 @@ public class FiltroDeLimiteDeTaxa extends OncePerRequestFilter {
 
         if (!resultado.permitido()) {
             resposta.setHeader("Retry-After", String.valueOf(resultado.reiniciaEmSegundos()));
-            ProblemaHttp.escrever(resposta, json, HttpStatus.TOO_MANY_REQUESTS, "rate-limit",
+            ProblemaHttp.escrever(resposta, json, HttpStatus.TOO_MANY_REQUESTS, ProblemTypes.LIMITE_DE_TAXA,
                     "Muitas requisições",
                     "Limite de " + resultado.limite() + " requisições por janela excedido. "
                             + "Tente novamente em " + resultado.reiniciaEmSegundos() + " segundos.");

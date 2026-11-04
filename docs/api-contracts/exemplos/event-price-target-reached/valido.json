@@ -1,0 +1,17 @@
+{
+  "alertId": "alr_01HZ",
+  "userId": "usr_01HZ",
+  "searchId": "sch_01HZ",
+  "offerId": "of_01HZ8K",
+  "origin": "GRU",
+  "destination": "LIS",
+  "targetPrice": {
+    "amount": 5000.0,
+    "currency": "BRL"
+  },
+  "foundPrice": {
+    "amount": 4820.35,
+    "currency": "BRL"
+  },
+  "detectedAt": "2026-07-01T13:25:00Z"
+}

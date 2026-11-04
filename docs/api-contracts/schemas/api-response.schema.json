@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/api-response.schema.json",
+  "title": "ApiResponse",
+  "description": "Envelope de toda resposta de sucesso. Erro não usa este envelope: usa Problem Details.",
+  "type": "object",
+  "required": [
+    "data",
+    "meta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "description": "Conteúdo da resposta; a forma depende do recurso."
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "correlationId",
+        "timestamp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "correlationId": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

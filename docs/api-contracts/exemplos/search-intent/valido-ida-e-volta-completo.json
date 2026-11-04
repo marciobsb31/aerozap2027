@@ -1,0 +1,20 @@
+{
+  "origin": "GRU",
+  "destination": "LIS",
+  "departureDate": "2026-07-10",
+  "returnDate": "2026-07-20",
+  "passengers": {
+    "adults": 2,
+    "children": 1,
+    "infants": 1
+  },
+  "cabin": "BUSINESS",
+  "currency": "EUR",
+  "maxStops": 1,
+  "preferredAirlines": [
+    "TP",
+    "LA"
+  ],
+  "maxPrice": 9500.0,
+  "locale": "es"
+}

@@ -1,0 +1,12 @@
+{
+  "searchId": "sch_01HZ",
+  "userId": "usr_01HZ",
+  "offerCount": 37,
+  "providersSucceeded": [
+    "TRAVELPAYOUTS"
+  ],
+  "providersFailed": [
+    "SERPAPI_GOOGLE_FLIGHTS"
+  ],
+  "completedAt": "2026-07-01T13:22:19Z"
+}

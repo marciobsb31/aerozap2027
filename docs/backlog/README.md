@@ -37,7 +37,7 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 | AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | REVIEW | [AZ-014](tasks/AZ-014.md) |
 | AZ-015 | API Gateway/BFF base: autenticação de entrada, roteamento, rate limit | A1 | AZ-014 | REVIEW | [AZ-015](tasks/AZ-015.md) |
 | AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | BACKLOG | [AZ-016](tasks/AZ-016.md) |
-| AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | BACKLOG | [AZ-017](tasks/AZ-017.md) |
+| AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | REVIEW | [AZ-017](tasks/AZ-017.md) |
 | AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | BACKLOG | [AZ-018](tasks/AZ-018.md) |
 | AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | BACKLOG | [AZ-019](tasks/AZ-019.md) |
 
