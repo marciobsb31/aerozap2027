@@ -16,7 +16,7 @@
 -->
 <included>
   <conversionRule conversionWord="msgSeguro"
-                  converterClass="br.com.aerozap.observability.logging.MensagemMascaradaConverter"/>
+                  class="br.com.aerozap.observability.logging.MensagemMascaradaConverter"/>
 
   <springProperty scope="context" name="NOME_SERVICO" source="spring.application.name" defaultValue="aerozap"/>
   <property name="URL_LOKI" value="${LOKI_URL:-http://localhost:3100/loki/api/v1/push}"/>

@@ -48,7 +48,7 @@ jobs:
         run: |
           falhou=0
           for f in $(find infrastructure -name 'docker-compose*.yml' | sort); do
-            if grep -nE '^\s*image:' "$f" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
+            if grep -nE '^\s*image:' "$f" | sed 's/#.*//' | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
               echo "::error file=$f::imagem sem tag de versão"; falhou=1
             fi
             if grep -n ':latest' "$f"; then

@@ -35,6 +35,13 @@ tenta(){ curl -fsS --max-time 10 "$1" 2>/dev/null; }
   echo "$ALVOS" | grep -q '"job":"rabbitmq"' && ok "RabbitMQ sendo coletado" || falhou "RabbitMQ não aparece nos alvos"
 
   echo
+  echo "— Plugin de métricas do RabbitMQ —"
+  PLUGINS=$(docker exec aerozap-rabbitmq rabbitmq-plugins list -e 2>&1)
+  echo "$PLUGINS" | grep -q "rabbitmq_prometheus" \
+    && ok "rabbitmq_prometheus ativo" \
+    || falhou "rabbitmq_prometheus não está ativo (o RabbitMQ precisa ser recriado por obs-up.sh)"
+
+  echo
   echo "— Alertas —"
   ALERTAS=$(tenta "http://localhost:${ALERTA}/api/v2/alerts")
   echo "$ALERTAS" | grep -q 'AlertaDeTeste' \
