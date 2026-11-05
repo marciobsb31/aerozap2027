@@ -46,9 +46,11 @@ public class ServicoDeSessao {
      *
      * @throws ProblemaDeNegocio quando o token não existe, expirou, foi revogado ou já tinha sido
      *                           usado — sempre com a mesma mensagem, para não dizer a quem tenta
-     *                           qual das hipóteses aconteceu
+     *                           qual das hipóteses aconteceu. A recusa não desfaz a transação: sem
+     *                           isso, o rollback apagaria a revogação da família e o token
+     *                           possivelmente roubado continuaria valendo
      */
-    @Transactional
+    @Transactional(noRollbackFor = ProblemaDeNegocio.class)
     public Renovacao renovar(String tokenApresentado, String userAgent, String origemIp) {
         Sessao sessao = repositorio.porTokenHash(Segredos.hash(tokenApresentado))
                 .orElseThrow(ServicoDeSessao::sessaoInvalida);
