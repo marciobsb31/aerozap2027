@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
  */
 class ArenaDeConcorrenciaTest {
 
+    private static final int TAREFAS = 50;
+
     @Test
     @DisplayName("executa todas as operações e devolve o resultado de cada uma")
     void executaTodas() {
@@ -30,24 +32,35 @@ class ArenaDeConcorrenciaTest {
     }
 
     @Test
-    @DisplayName("cria disputa real: um contador sem proteção perde incrementos")
-    void criaDisputaReal() {
-        // Este é o teste do teste. Se a arena serializasse as tarefas, o contador chegaria a 2000
-        // em todas as rodadas e a prova de simultaneidade não existiria.
-        boolean perdeuAlgumIncremento = false;
-        for (int rodada = 0; rodada < 20 && !perdeuAlgumIncremento; rodada++) {
-            var contador = new int[1];
-            ArenaDeConcorrencia.disparar(200, indice -> {
-                for (int i = 0; i < 1_000; i++) {
-                    contador[0] = contador[0] + 1;
-                }
-                return indice;
-            });
-            perdeuAlgumIncremento = contador[0] < 200_000;
-        }
-        assertThat(perdeuAlgumIncremento)
+    @DisplayName("cria sobreposição real: várias tarefas ficam dentro da seção ao mesmo tempo")
+    void criaSobreposicaoReal() {
+        // Este é o teste do teste. A primeira versão dele inferia a sobreposição de um contador
+        // desprotegido perder incrementos — e isso depende do escalonador e do JIT, então ela
+        // falhava em algumas máquinas e passava em outras. Teste instável é defeito, inclusive
+        // quando o teste é meu. Agora a sobreposição é MEDIDA: cada tarefa registra quantas
+        // estavam dentro da seção junto com ela.
+        var dentro = new AtomicInteger();
+        var maximoSimultaneo = new AtomicInteger();
+
+        ArenaDeConcorrencia.disparar(TAREFAS, indice -> {
+            int simultaneas = dentro.incrementAndGet();
+            maximoSimultaneo.accumulateAndGet(simultaneas, Math::max);
+            try {
+                // Segura a tarefa dentro da seção enquanto as outras chegam. É a única pausa
+                // legítima num teste de concorrência: a pausa É o objeto da medição.
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            } finally {
+                dentro.decrementAndGet();
+            }
+            return simultaneas;
+        });
+
+        assertThat(maximoSimultaneo.get())
                 .as("a arena precisa sobrepor as tarefas; sem sobreposição não há teste de corrida")
-                .isTrue();
+                .isGreaterThanOrEqualTo(TAREFAS);
     }
 
     @Test

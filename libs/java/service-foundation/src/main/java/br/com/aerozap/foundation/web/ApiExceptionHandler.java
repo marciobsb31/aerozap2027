@@ -23,6 +23,22 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
+    /**
+     * Erro que o domínio previu: o tipo, o título e a mensagem são os que o serviço escreveu.
+     * Fica antes do tratador genérico porque o Spring escolhe o tratador mais específico.
+     */
+    @ExceptionHandler(ProblemaDeNegocio.class)
+    public ProblemDetail handleNegocio(ProblemaDeNegocio ex) {
+        // Nível de aviso, não de erro: isto é o sistema funcionando, não quebrando. Registrar como
+        // erro encheria o alerta de ruído e esconderia a falha de verdade.
+        log.warn("Problema de negócio: {} ({})", ex.titulo(), ex.tipo());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(ex.status(), ex.getMessage());
+        problem.setType(URI.create(ex.tipo()));
+        problem.setTitle(ex.titulo());
+        problem.setProperty("correlationId", CorrelationIds.current());
+        return problem;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception ex) {
         log.error("Erro não tratado", ex);
@@ -45,7 +61,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                                                           HttpStatusCode statusCode, WebRequest request) {
         if (body instanceof ProblemDetail problem) {
             problem.setProperty("correlationId", CorrelationIds.current());
+            // O Spring preenche `type` com "about:blank", que não diz nada a quem consome. Como o
+            // catálogo de tipos é contrato (ProblemTypes), o erro gerado pelo próprio MVC recebe
+            // aqui o tipo correspondente ao status — senão metade dos erros da API teria tipo e a
+            // outra metade não, justamente a metade que o cliente não controla.
+            if (problem.getType() == null || "about:blank".equals(problem.getType().toString())) {
+                problem.setType(URI.create(tipoPara(statusCode)));
+            }
         }
         return super.createResponseEntity(body, headers, statusCode, request);
+    }
+
+    private static String tipoPara(HttpStatusCode status) {
+        return switch (status.value()) {
+            case 400, 422 -> ProblemTypes.VALIDACAO;
+            case 401 -> ProblemTypes.NAO_AUTENTICADO;
+            case 403 -> ProblemTypes.ACESSO_NEGADO;
+            case 404, 405, 406 -> ProblemTypes.NAO_ENCONTRADO;
+            case 409 -> ProblemTypes.CONFLITO;
+            case 429 -> ProblemTypes.LIMITE_DE_TAXA;
+            case 504 -> ProblemTypes.TEMPO_ESGOTADO;
+            default -> ProblemTypes.ERRO_INTERNO;
+        };
     }
 }
