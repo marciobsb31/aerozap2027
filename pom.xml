@@ -34,6 +34,9 @@
     <module>apps/platform-core</module>
     <module>apps/api-gateway</module>
     <module>apps/conversation-ai</module>
+    <!-- Ferramenta de teste (AZ-018). Não vai para produção: os serviços a declaram com escopo
+         de teste, e o POM dela não produz artefato publicável. -->
+    <module>tests/concorrencia</module>
   </modules>
 
   <dependencyManagement>
@@ -51,6 +54,11 @@
       <dependency>
         <groupId>br.com.aerozap</groupId>
         <artifactId>observability-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.com.aerozap</groupId>
+        <artifactId>harness-de-concorrencia</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

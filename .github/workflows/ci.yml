@@ -57,6 +57,15 @@ jobs:
           done
           exit "$falhou"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      # A matriz é a promessa de que nenhum requisito some do radar e de que nenhum status existe
+      # sem teste que o sustente. Verificada sempre, não só quando alguém lembra (AZ-018).
+      - name: Matriz de rastreabilidade (requisito → teste → evidência)
+        run: bash scripts/rastreabilidade.sh --conferir
+
       - name: Nenhum arquivo .env versionado
         run: |
           if git ls-files | grep -E '(^|/)\.env($|\.[^e])' | grep -v '\.env\.example$'; then
@@ -110,6 +119,9 @@ jobs:
               - 'apps/platform-core/**'
               - 'libs/java/**'
               - 'pom.xml'
+              # O harness de concorrência (AZ-018) roda contra este serviço: mexer nele tem de
+              # disparar o job que o executa.
+              - 'tests/concorrencia/**'
             search:
               - 'apps/search/**'
               - 'libs/java/**'
