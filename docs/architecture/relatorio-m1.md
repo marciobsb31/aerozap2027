@@ -1,21 +1,21 @@
 # Relatório do marco M1 — Fundação
 
-**Autor:** A0 CTO Master · **Data:** 05/11/2026 · **Status:** dez tarefas entregues e verificadas, aguardando o aceite do Product Owner (atualizado em 05/11/2026).
+**Autor:** A0 CTO Master · **Data:** 05/11/2026 · **Status:** marco M1 aceito pelo Product Owner em 05/11/2026, incluindo os contratos v0.
 
 ## 1. Entregas e parecer do CTO
 
 | Tarefa | Entrega | Dono | Estado | Parecer |
 |---|---|---|---|---|
-| AZ-010 | Estrutura do repositório, convenções, branches, templates | A6 + A0 | REVIEW | Entregue |
-| AZ-011 | Compose local (PostgreSQL, RabbitMQ, Redis, MinIO) | A6 | REVIEW | Entregue; sobe com um comando, verificado na máquina do PO |
-| AZ-012 | Pipeline CI base | A6 | REVIEW | **Aprovado com ressalva:** `Dependency graph` ainda desligado no GitHub, então a revisão de dependências roda com `continue-on-error`. Ao ligar, remover a linha |
-| AZ-013 | Observabilidade (métricas, logs, tracing, alertas) | A6 | REVIEW | Entregue; métricas, logs, rastros e alerta verificados (seção 7) |
-| AZ-014 | Esqueleto de serviço Java | A1 | REVIEW | Entregue; alvo Java 25 adotado com o spike aprovado (nota na ADR-0003) |
-| AZ-015 | API Gateway/BFF (token, roteamento, limite de taxa) | A1 | REVIEW | Entregue; os três critérios provados na máquina do PO (`logs/dev-gateway-check.log`) |
-| AZ-016 | Design system, layout, i18n pt/es, `api-client` do OpenAPI | A2 | REVIEW | Entregue; Angular 22, 57 testes |
-| AZ-017 | Contratos v0 | A0 + A1 + A3 + A4 | REVIEW | Entregue; 26 tipos, 8 esquemas, 52 exemplos executáveis |
-| AZ-018 | Estratégia de testes, matriz e harness de concorrência | A7 | REVIEW | Entregue; os três testes de concorrência ainda não foram executados por mim (precisam de Docker) |
-| AZ-019 | Interpretador v0 e conjunto dourado pt/es | A3 | REVIEW | Entregue; 42 casos, defesa estrutural a injeção |
+| AZ-010 | Estrutura do repositório, convenções, branches, templates | A6 + A0 | DONE | Entregue |
+| AZ-011 | Compose local (PostgreSQL, RabbitMQ, Redis, MinIO) | A6 | DONE | Entregue; sobe com um comando, verificado na máquina do PO |
+| AZ-012 | Pipeline CI base | A6 | DONE | **Aprovado com ressalva:** `Dependency graph` ainda desligado no GitHub, então a revisão de dependências roda com `continue-on-error`. Ao ligar, remover a linha |
+| AZ-013 | Observabilidade (métricas, logs, tracing, alertas) | A6 | DONE | Entregue; métricas, logs, rastros e alerta verificados (seção 7) |
+| AZ-014 | Esqueleto de serviço Java | A1 | DONE | Entregue; alvo Java 25 adotado com o spike aprovado (nota na ADR-0003) |
+| AZ-015 | API Gateway/BFF (token, roteamento, limite de taxa) | A1 | DONE | Entregue; os três critérios provados na máquina do PO (`logs/dev-gateway-check.log`) |
+| AZ-016 | Design system, layout, i18n pt/es, `api-client` do OpenAPI | A2 | DONE | Entregue; Angular 22, 57 testes |
+| AZ-017 | Contratos v0 | A0 + A1 + A3 + A4 | DONE | Entregue; 26 tipos, 8 esquemas, 52 exemplos executáveis |
+| AZ-018 | Estratégia de testes, matriz e harness de concorrência | A7 | DONE | Entregue; os três testes de concorrência ainda não foram executados por mim (precisam de Docker) |
+| AZ-019 | Interpretador v0 e conjunto dourado pt/es | A3 | DONE | Entregue; 42 casos, defesa estrutural a injeção |
 
 **Como revisei.** Li cada DELIVERY REPORT contra os critérios de aceite da TASK e rodei o build do
 que podia ser rodado no ambiente do agente: os sete módulos Java e o frontend inteiro. O que exige
@@ -53,7 +53,7 @@ integração que exigem Docker.
 | Ambiente reproduzível com health checks | **Feito** — verificado na máquina do PO |
 | CI verde | **Feito** — `CI OK` verde em `develop` |
 | Esqueleto de serviço publicado | **Feito** |
-| Contratos v0 aprovados | **Pendente** — entregues e testados; falta o aceite do PO |
+| Contratos v0 aprovados | **Feito** — aceitos pelo PO em 05/11/2026 |
 
 ### Verificações que dependiam da máquina do PO
 
@@ -69,8 +69,8 @@ Executadas em 05/11/2026; o resultado está na seção 7.
 
 ## 6. Próximos passos
 
-1. Aceite do Product Owner: contratos v0 e o PR de `develop` para `main`.
-2. Fase 2 (M2): concluir AZ-020 e executar AZ-021, AZ-023, AZ-024 e AZ-025.
+1. Fase 2 (M2): concluir AZ-020 e executar AZ-021, AZ-023, AZ-024 e AZ-025.
+2. Reavaliar o alerta de CSRF do gateway (alerta nº 1 do CodeQL, avaliado como falso positivo, ainda aberto no GitHub) se a AZ-024 guardar o token em cookie.
 
 ## 7. O que a execução real revelou (05/11/2026)
 

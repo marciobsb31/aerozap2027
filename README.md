@@ -8,8 +8,8 @@
 
 <br/>
 
-![Status](https://img.shields.io/badge/status-Fase_1_Funda%C3%A7%C3%A3o-F59E0B?style=for-the-badge&logo=rocket&logoColor=white)
-![Marco](https://img.shields.io/badge/marco-M0_%E2%86%92_M1-8B5CF6?style=for-the-badge&logo=flag&logoColor=white)
+![Status](https://img.shields.io/badge/status-Fase_2_Conta_e_franquia-F59E0B?style=for-the-badge&logo=rocket&logoColor=white)
+![Marco](https://img.shields.io/badge/marco-M1_%E2%86%92_M2-8B5CF6?style=for-the-badge&logo=flag&logoColor=white)
 ![Idiomas](https://img.shields.io/badge/idiomas-pt--BR_%7C_es-10B981?style=for-the-badge&logo=googletranslate&logoColor=white)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-todos_os_direitos_reservados-EF4444?style=for-the-badge)
 
@@ -139,8 +139,8 @@ Fluxo de trabalho: `TASK → DELIVERY REPORT → revisão → DONE`, com estados
 | Marco | Entrega | Estado |
 |:--:|---|:--:|
 | **M0** | Decisões: lista respondida, PRD v1, relatórios de provedores e ADRs 0001 a 0004 | 🟡 em fechamento |
-| **M1** | Fundação: um comando sobe o ambiente; CI verde; painel de saúde; esqueleto de serviço e design system | 🟠 iniciando |
-| **M2** | Conta e franquia: cadastro, login, saldo Free de 5 consultas e teste de concorrência | ⚪ |
+| **M1** | Fundação: um comando sobe o ambiente; CI verde; painel de saúde; esqueleto de serviço e design system | ✅ aceito |
+| **M2** | Conta e franquia: cadastro, login, saldo Free de 5 consultas e teste de concorrência | 🟠 em andamento |
 | **M3** | Pesquisa Web: filtros, cartões e histórico, com preço indicativo rotulado | ⚪ |
 | **M4** | WhatsApp: pesquisa por texto e áudio e continuação na Web | ⚪ |
 | **M5** | Alertas: alerta de preço por conversa ou Web, entregue sem duplicidade | ⚪ |
@@ -154,8 +154,8 @@ O plano completo, com 61 tarefas, está em [`docs/architecture/plano-de-implemen
 
 ## 🚀 Como começar
 
-> 🧱 O projeto está na **Fase 1 (Fundação)**. O ambiente local já sobe com um comando e o
-> esqueleto de serviço Java já responde; as telas e as regras de negócio vêm nos marcos seguintes.
+> 🧱 O projeto está na **Fase 2 (Conta e franquia)**. A fundação foi aceita; o cadastro, o login e a
+> franquia já existem no backend, sem telas. A pesquisa de voos vem no marco seguinte.
 
 ```bash
 # 1. clonar

@@ -30,16 +30,16 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 
 | ID | Tarefa | Dono | Depende de | Estado | TASK |
 |---|---|---|---|---|---|
-| AZ-010 | Estrutura do repositório, convenções, branches, templates de PR | A6 + A0 | AZ-007 | REVIEW | [AZ-010](tasks/AZ-010.md) |
-| AZ-011 | Docker Compose local: PostgreSQL, RabbitMQ, Redis, object storage; **um comando sobe tudo** | A6 | AZ-010 | REVIEW | [AZ-011](tasks/AZ-011.md) |
-| AZ-012 | Pipeline CI base: lint, testes, Testcontainers, SAST, dependências, segredos, build de imagem | A6 | AZ-010 | REVIEW | [AZ-012](tasks/AZ-012.md) |
-| AZ-013 | Observabilidade base: métricas, dashboards, logs estruturados, tracing, alertas mínimos | A6 | AZ-011 | REVIEW | [AZ-013](tasks/AZ-013.md) |
-| AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | REVIEW | [AZ-014](tasks/AZ-014.md) |
-| AZ-015 | API Gateway/BFF base: autenticação de entrada, roteamento, rate limit | A1 | AZ-014 | REVIEW | [AZ-015](tasks/AZ-015.md) |
-| AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | REVIEW | [AZ-016](tasks/AZ-016.md) |
-| AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | REVIEW | [AZ-017](tasks/AZ-017.md) |
-| AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | REVIEW | [AZ-018](tasks/AZ-018.md) |
-| AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | REVIEW | [AZ-019](tasks/AZ-019.md) |
+| AZ-010 | Estrutura do repositório, convenções, branches, templates de PR | A6 + A0 | AZ-007 | DONE | [AZ-010](tasks/AZ-010.md) |
+| AZ-011 | Docker Compose local: PostgreSQL, RabbitMQ, Redis, object storage; **um comando sobe tudo** | A6 | AZ-010 | DONE | [AZ-011](tasks/AZ-011.md) |
+| AZ-012 | Pipeline CI base: lint, testes, Testcontainers, SAST, dependências, segredos, build de imagem | A6 | AZ-010 | DONE | [AZ-012](tasks/AZ-012.md) |
+| AZ-013 | Observabilidade base: métricas, dashboards, logs estruturados, tracing, alertas mínimos | A6 | AZ-011 | DONE | [AZ-013](tasks/AZ-013.md) |
+| AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | DONE | [AZ-014](tasks/AZ-014.md) |
+| AZ-015 | API Gateway/BFF base: autenticação de entrada, roteamento, rate limit | A1 | AZ-014 | DONE | [AZ-015](tasks/AZ-015.md) |
+| AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | DONE | [AZ-016](tasks/AZ-016.md) |
+| AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | DONE | [AZ-017](tasks/AZ-017.md) |
+| AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | DONE | [AZ-018](tasks/AZ-018.md) |
+| AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | DONE | [AZ-019](tasks/AZ-019.md) |
 
 ## Fase 2 — Identidade, planos e franquia (marco M2)
 
