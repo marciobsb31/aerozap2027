@@ -119,9 +119,9 @@ Testes de integração escritos (executam na CI, que tem Docker):
 
 ## Ressalvas
 
-- **Os testes de integração não foram executados por mim**: exigem Docker, que o ambiente do agente
-  não tem. Compilam e estão ligados ao job que os roda. Até saírem verdes na CI, a prova é de que o
-  código está correto por construção, não de que passou.
+- **Testes de integração executados em 05/11/2026**, com Docker local e na CI. A primeira execução
+  reprovou a primeira consulta simultânea: 9 de 32 requisições respondiam 500, com o saldo correto.
+  Corrigido em `bugfix/AZ-022-periodo-concorrente`, junto de uma verificação errada do próprio teste.
 - **Não há teste de virada de período com o tempo andando** (acima). É o buraco mais relevante
   desta entrega.
 - **O relógio não é injetável** no serviço; `Instant.now()` aparece direto. Para testar virada e

@@ -60,6 +60,8 @@ bash scripts/obs-verify.sh      # evidência em logs/obs-verify.log
 | Logs (também pelo Grafana) | http://localhost:3100 |
 | Rastros (também pelo Grafana) | http://localhost:3200 |
 
+A porta do Grafana é `GRAFANA_PORT` no `.env`; troque-a se a 3000 já estiver em uso.
+
 Usuário e senha do Grafana vêm de `GRAFANA_USER` e `GRAFANA_PASSWORD` no `.env`. Nenhuma
 credencial fica no repositório.
 

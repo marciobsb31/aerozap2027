@@ -33,24 +33,24 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 | AZ-010 | Estrutura do repositório, convenções, branches, templates de PR | A6 + A0 | AZ-007 | REVIEW | [AZ-010](tasks/AZ-010.md) |
 | AZ-011 | Docker Compose local: PostgreSQL, RabbitMQ, Redis, object storage; **um comando sobe tudo** | A6 | AZ-010 | REVIEW | [AZ-011](tasks/AZ-011.md) |
 | AZ-012 | Pipeline CI base: lint, testes, Testcontainers, SAST, dependências, segredos, build de imagem | A6 | AZ-010 | REVIEW | [AZ-012](tasks/AZ-012.md) |
-| AZ-013 | Observabilidade base: métricas, dashboards, logs estruturados, tracing, alertas mínimos | A6 | AZ-011 | IN_PROGRESS | [AZ-013](tasks/AZ-013.md) |
+| AZ-013 | Observabilidade base: métricas, dashboards, logs estruturados, tracing, alertas mínimos | A6 | AZ-011 | REVIEW | [AZ-013](tasks/AZ-013.md) |
 | AZ-014 | Esqueleto padrão de serviço Java: Actuator, Flyway, OpenAPI, Problem Details, correlation ID, Outbox, filas e DLQ | A1 | AZ-010, AZ-011 | REVIEW | [AZ-014](tasks/AZ-014.md) |
 | AZ-015 | API Gateway/BFF base: autenticação de entrada, roteamento, rate limit | A1 | AZ-014 | REVIEW | [AZ-015](tasks/AZ-015.md) |
-| AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | BACKLOG | [AZ-016](tasks/AZ-016.md) |
+| AZ-016 | Design system, layout, i18n pt/es e `api-client` gerado do OpenAPI | A2 | AZ-010 | REVIEW | [AZ-016](tasks/AZ-016.md) |
 | AZ-017 | Contratos v0: envelope de resposta, erros, `SearchIntent`, `FlightOffer`, `FlightProvider`, eventos base | A0 + A1 + A3 + A4 | AZ-003 | REVIEW | [AZ-017](tasks/AZ-017.md) |
-| AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | BACKLOG | [AZ-018](tasks/AZ-018.md) |
+| AZ-018 | Estratégia de testes, matriz de rastreabilidade e harness de concorrência | A7 | AZ-012 | REVIEW | [AZ-018](tasks/AZ-018.md) |
 | AZ-019 | Interpretador de linguagem natural v0 e conjunto dourado pt/es (independente do backend, contra `SearchIntent`) | A3 | AZ-017 | REVIEW | [AZ-019](tasks/AZ-019.md) |
 
 ## Fase 2 — Identidade, planos e franquia (marco M2)
 
 | ID | Tarefa | Dono | Depende de | Estado | TASK |
 |---|---|---|---|---|---|
-| AZ-020 | Identity: cadastro, login, refresh token rotacionado, papéis, recuperação de acesso | A1 | AZ-014 | BACKLOG | — |
-| AZ-021 | Vínculo telefone-conta com verificação de posse do número | A1 | AZ-020 | BACKLOG | — |
-| AZ-022 | Entitlement: planos, `usage_period`, `usage_event`, **reserva → confirmação/liberação** (ADR), idempotência, reserva órfã expirada | A1 | AZ-020 | BACKLOG | — |
-| AZ-023 | Planos e preços **configuráveis** (sem valor fixo no código) | A1 | AZ-022 | BACKLOG | — |
-| AZ-024 | Web: cadastro, login, perfil, preferências de idioma, saldo e consumo | A2 | AZ-016, AZ-020 | BACKLOG | — |
-| AZ-025 | Testes: concorrência da última consulta, repetição, virada de trimestre, isolamento entre usuários (BOLA), token expirado | A7 | AZ-022 | BACKLOG | — |
+| AZ-020 | Identity: cadastro, login, refresh token rotacionado, papéis, recuperação de acesso | A1 | AZ-014 | IN_PROGRESS | [AZ-020](tasks/AZ-020.md) |
+| AZ-021 | Vínculo telefone-conta com verificação de posse do número | A1 | AZ-020 | READY | [AZ-021](tasks/AZ-021.md) |
+| AZ-022 | Entitlement: planos, `usage_period`, `usage_event`, **reserva → confirmação/liberação** (ADR), idempotência, reserva órfã expirada | A1 | AZ-020 | REVIEW | [AZ-022](tasks/AZ-022.md) |
+| AZ-023 | Planos e preços **configuráveis** (sem valor fixo no código) | A1 | AZ-022 | READY | [AZ-023](tasks/AZ-023.md) |
+| AZ-024 | Web: cadastro, login, perfil, preferências de idioma, saldo e consumo | A2 | AZ-016, AZ-020 | READY | [AZ-024](tasks/AZ-024.md) |
+| AZ-025 | Testes: concorrência da última consulta, repetição, virada de trimestre, isolamento entre usuários (BOLA), token expirado | A7 | AZ-022 | READY | [AZ-025](tasks/AZ-025.md) |
 
 ## Fase 3 — Pesquisa (marco M3)
 
