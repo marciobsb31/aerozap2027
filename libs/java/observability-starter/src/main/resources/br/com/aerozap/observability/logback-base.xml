@@ -32,16 +32,19 @@
     <http>
       <url>${URL_LOKI}</url>
     </http>
-    <batchMaxItems>200</batchMaxItems>
-    <batchTimeoutMs>5000</batchTimeoutMs>
-    <format>
-      <label>
-        <pattern>service_name=${NOME_SERVICO},nivel=%level</pattern>
-      </label>
-      <message>
-        <pattern>nivel=%level logger=%logger correlationId=%X{correlationId:-} traceId=%X{traceId:-} spanId=%X{spanId:-} msg=%msgSeguro%n%ex</pattern>
-      </message>
-    </format>
+    <batch>
+      <maxItems>200</maxItems>
+      <timeoutMs>5000</timeoutMs>
+    </batch>
+    <labels>
+      service_name=${NOME_SERVICO}
+      nivel=%level
+    </labels>
+    <!-- Sem metadados automáticos: o padrão da biblioteca envia MDC e atributos sem passar pelo mascarador. -->
+    <structuredMetadata>off</structuredMetadata>
+    <message>
+      <pattern>nivel=%level logger=%logger correlationId=%X{correlationId:-} traceId=%X{traceId:-} spanId=%X{spanId:-} msg=%msgSeguro%n%ex</pattern>
+    </message>
   </appender>
 
   <springProfile name="!observabilidade">
