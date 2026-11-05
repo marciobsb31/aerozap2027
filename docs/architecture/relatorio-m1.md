@@ -1,6 +1,6 @@
 # Relatório do marco M1 — Fundação
 
-**Autor:** A0 CTO Master · **Data:** 05/11/2026 · **Status:** dez tarefas entregues, em revisão do Product Owner. Três verificações dependem da máquina do PO e estão nomeadas na seção 4.
+**Autor:** A0 CTO Master · **Data:** 05/11/2026 · **Status:** dez tarefas entregues e verificadas, aguardando o aceite do Product Owner (atualizado em 05/11/2026).
 
 ## 1. Entregas e parecer do CTO
 
@@ -9,7 +9,7 @@
 | AZ-010 | Estrutura do repositório, convenções, branches, templates | A6 + A0 | REVIEW | Entregue |
 | AZ-011 | Compose local (PostgreSQL, RabbitMQ, Redis, MinIO) | A6 | REVIEW | Entregue; sobe com um comando, verificado na máquina do PO |
 | AZ-012 | Pipeline CI base | A6 | REVIEW | **Aprovado com ressalva:** `Dependency graph` ainda desligado no GitHub, então a revisão de dependências roda com `continue-on-error`. Ao ligar, remover a linha |
-| AZ-013 | Observabilidade (métricas, logs, tracing, alertas) | A6 | **IN_PROGRESS** | Serviços sobem e o alerta dispara; falta a verificação final com logs no Loki e rastros no Tempo. Única tarefa do M1 que não está em REVIEW |
+| AZ-013 | Observabilidade (métricas, logs, tracing, alertas) | A6 | REVIEW | Entregue; métricas, logs, rastros e alerta verificados (seção 7) |
 | AZ-014 | Esqueleto de serviço Java | A1 | REVIEW | Entregue; alvo Java 25 adotado com o spike aprovado (nota na ADR-0003) |
 | AZ-015 | API Gateway/BFF (token, roteamento, limite de taxa) | A1 | REVIEW | Entregue; os três critérios provados na máquina do PO (`logs/dev-gateway-check.log`) |
 | AZ-016 | Design system, layout, i18n pt/es, `api-client` do OpenAPI | A2 | REVIEW | Entregue; Angular 22, 57 testes |
@@ -51,29 +51,45 @@ integração que exigem Docker.
 | Critério (plano §Fase 1) | Estado |
 |---|---|
 | Ambiente reproduzível com health checks | **Feito** — verificado na máquina do PO |
-| CI verde | **Pendente de confirmação** — as execuções precisam ser conferidas na aba Actions depois dos dois últimos envios |
+| CI verde | **Feito** — `CI OK` verde em `develop` |
 | Esqueleto de serviço publicado | **Feito** |
 | Contratos v0 aprovados | **Pendente** — entregues e testados; falta o aceite do PO |
 
-### Três verificações que dependem da máquina do PO
+### Verificações que dependiam da máquina do PO
 
-Nenhuma delas é código a escrever; são execuções que o ambiente do agente não consegue fazer.
-
-1. **AZ-013, verificação final.** `bash scripts/obs-up.sh && SPRING_PROFILES_ACTIVE=observabilidade bash scripts/dev-service-check.sh && bash scripts/obs-verify.sh` — é o que move a AZ-013 para REVIEW.
-2. **Testes de concorrência da AZ-018.** `mvn -pl apps/platform-core -am verify` — exige Docker, que o ambiente do agente não tem.
-3. **Frontend.** Node 26 e `bash scripts/frontend-dev.sh` — a instalação de dependências pela ponte é cortada por tempo limite e recomeça.
+Executadas em 05/11/2026; o resultado está na seção 7.
 
 ## 5. Riscos e dívidas que atravessam para o M2
 
 1. **Nenhum teste de isolamento entre usuários existe**, porque ainda não existe usuário. É o primeiro teste de segurança do M2 e o mais importante deles (RF-007, BOLA/IDOR).
-2. **`Dependency graph` desligado** no GitHub: a revisão de dependências não bloqueia nada hoje.
-3. **`CI OK` ainda não é verificação obrigatória** na proteção de branch. Enquanto não for, um PR vermelho pode ser mesclado.
+2. ~~`Dependency graph` desligado~~ — já estava ativo; a revisão de dependências voltou a bloquear.
+3. ~~`CI OK` não obrigatório~~ — agora exigido em `main` e `develop`.
 4. **Decisões de produto em aberto que o M2 toca**: tipo de período da franquia (RN-02), política de "pesquisa concluída com sucesso" (RN-12) e método de cadastro (RF-001). O desenho do M2 as trata como **configuração**, não como valor fixo no código — é o que permite começar sem a resposta e mudar depois sem migração dolorosa. A escolha continua sua.
 5. **Preço indicativo, não reservável** (achado do M0, D-06): segue valendo e molda o M3.
 
 ## 6. Próximos passos
 
-1. As três verificações da seção 4.
-2. Mesclar `feature/AZ-016-design-system` e depois `feature/AZ-018-estrategia-de-testes` (a segunda saiu da primeira).
-3. Ligar o `Dependency graph` e tornar `CI OK` obrigatório na proteção de branch.
-4. Fase 2 (M2): as TASKs AZ-020 a AZ-025 estão escritas e prontas para execução.
+1. Aceite do Product Owner: contratos v0 e o PR de `develop` para `main`.
+2. Fase 2 (M2): concluir AZ-020 e executar AZ-021, AZ-023, AZ-024 e AZ-025.
+
+## 7. O que a execução real revelou (05/11/2026)
+
+Os testes de integração da identidade e da franquia e a verificação da observabilidade rodaram pela
+primeira vez. Todos tinham sido entregues compilando, e cinco defeitos só apareceram ao executar:
+
+| Defeito | Efeito | Severidade (`AGENTS.md` §8) |
+|---|---|---|
+| Reuso de refresh token não derrubava a família | Token possivelmente roubado continuava valendo | Crítico |
+| Limite de tentativas de login quebrado | Senha errada respondia 500; força bruta nunca era bloqueada | Alto |
+| Corrida na criação do período da franquia | 9 de 32 primeiras consultas simultâneas respondiam 500; saldo correto | Alto |
+| Configuração do Loki4j no formato antigo | Nenhum log chegava ao Loki | Médio |
+| `obs-verify.sh` aprovava sem logs nem rastros | Verificação verde sem o que deveria provar | Médio |
+
+Todos corrigidos. Dois testes estavam errados, e não o código: a senha curta (esperava 422, o catálogo
+define 400) e a mesma chave simultânea (exigia ausência de duplicatas onde 32 respostas iguais são o
+resultado certo).
+
+**Lição para as próximas fases:** nenhuma tarefa vai para REVIEW com testes de integração sem
+execução. Nessas tarefas, compilar não provava que funcionava.
+
+**Build completo:** 231 testes, zero falhas, com Docker local; `CI OK` verde em `develop`.

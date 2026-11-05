@@ -166,10 +166,28 @@ produção, destino real dos alertas (plantão) e política de retenção.
 ## Checklist de pronto
 
 - [x] Critérios de aceite atendidos no código e na documentação
-- [ ] Testes passando em CI (depende do push e da primeira execução do fluxo Java na CI)
+- [x] Testes passando em CI
 - [x] Documentação atualizada
 - [x] Sem credenciais, sem dados reais de usuários
 - [x] Dados de demonstração rotulados (não há)
 - [x] Logs sem dados sensíveis — mascaramento automático e testado
 - [x] Plano de reversão: `bash scripts/obs-down.sh --apagar-dados` remove tudo; o ambiente base
       segue intacto, pois a observabilidade vive em arquivo Compose separado
+
+## Verificação final (05/11/2026)
+
+A verificação que faltava achou três defeitos, corrigidos em `bugfix/AZ-013-perfil-no-service-check`:
+
+- **Nenhum log chegava ao Loki.** A configuração estava no formato do Loki4j 1.x e a versão usada é a
+  2.1, que ignora aqueles blocos. Com isso, o padrão com a mensagem mascarada também não valia.
+- **O perfil `observabilidade` não era aplicado.** O `dev-service-check.sh` carregava o `.env` por
+  cima dele, e ainda encerrava o serviço antes de o lote de logs sair.
+- **O `obs-verify.sh` aprovava sem logs nem rastros.** Agora falha nos dois casos.
+
+Resultado: `obs-verify.sh` com todas as verificações aprovadas, linhas do `platform-core` no Loki já
+no formato com `msg` mascarada, rastros no Tempo e o alvo do serviço coletado pelo Prometheus enquanto
+estava de pé. O teste automatizado do mascarador cobre os formatos sensíveis; não houve teste de ponta
+a ponta com um dado sensível real atravessando até o Loki.
+
+Na máquina do PO a porta 3000 já é usada por outro projeto, então lá o Grafana está em `GRAFANA_PORT=3300`
+(`.env`, não versionado). O padrão do `.env.example` continua 3000.
