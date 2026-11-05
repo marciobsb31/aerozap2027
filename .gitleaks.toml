@@ -7,3 +7,9 @@ description = "Arquivos de exemplo com valores fictícios"
 paths = [
   '''\.env\.example$''',
 ]
+
+# Valor fictício do teste do mascarador de logs (AZ-013). Só este valor, não o arquivo:
+# um segredo real colado naquele teste continua sendo acusado.
+regexes = [
+  '''sk-test-0123456789abcdef''',
+]
