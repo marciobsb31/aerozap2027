@@ -1,0 +1,31 @@
+<az-pular-para-conteudo>{{ i18n.t('navegacao.pular') }}</az-pular-para-conteudo>
+
+<header class="casca__topo">
+  <div class="az-conteudo casca__topo-interno">
+    <a class="casca__marca" routerLink="/">
+      <span class="casca__marca-sinal" aria-hidden="true"></span>
+      <span class="casca__marca-nome">{{ i18n.t('app.nome') }}</span>
+    </a>
+
+    <nav class="casca__navegacao" [attr.aria-label]="i18n.t('navegacao.principal')">
+      <a routerLink="/" routerLinkActive="casca__link--ativo" [routerLinkActiveOptions]="{ exact: true }">
+        {{ i18n.t('navegacao.inicio') }}
+      </a>
+      <a routerLink="/busca" routerLinkActive="casca__link--ativo">
+        {{ i18n.t('navegacao.buscas') }}
+      </a>
+    </nav>
+
+    <az-seletor-idioma />
+  </div>
+</header>
+
+<main id="conteudo-principal" class="az-conteudo casca__conteudo" tabindex="-1">
+  <router-outlet />
+</main>
+
+<footer class="casca__rodape">
+  <div class="az-conteudo">
+    <p>{{ i18n.t('rodape.direitos', { ano: ano }) }}</p>
+  </div>
+</footer>

@@ -47,3 +47,28 @@ AZ-010 cria a estrutura, `git init` e a primeira ADR de convenções. Reversão:
 
 ## Validação
 `docker compose up` e a pipeline base funcionam a partir dessa estrutura (AZ-011, AZ-012).
+
+
+## Nota de implementação (2026-11-04) — bibliotecas TypeScript dentro do workspace Angular
+
+Esta ADR previa `libs/typescript/` para `design-system` e `api-client`. Na AZ-016 as duas ficaram
+em **`frontend/projects/`**.
+
+**Motivo.** O Angular CLI e os workspaces do npm resolvem projetos a partir da raiz do workspace.
+Uma biblioteca fora dela quebra `ng build`, `ng test` e a resolução de estilos, e obriga a manter
+dois `package.json` e dois `node_modules` para o mesmo frontend. O custo é diário; o ganho da
+separação por diretório seria apenas de arrumação.
+
+**O que a ADR pedia continua valendo**: são projetos separados, com build próprio (ng-packagr),
+teste próprio e superfície pública explícita (`public-api.ts`), e nenhuma regra de negócio de um
+domínio atravessa para outro por elas. O filtro da CI passou a disparar o fluxo do frontend também
+em `docs/api-contracts/**`, porque o `api-client` é gerado dali.
+
+`libs/typescript/` fica para biblioteca TypeScript que não seja do frontend Angular; seu README
+aponta para o novo lugar.
+
+**`aerozap-admin`** (previsto no desenho desta ADR) não foi criado: um projeto vazio faria a CI
+construir e testar nada. Entra no marco que precisar dele.
+
+**Reversão**: mover as duas pastas e ajustar `angular.json`, `tsconfig.json` e o filtro da CI —
+barato enquanto o frontend é novo, e cada vez menos barato depois.

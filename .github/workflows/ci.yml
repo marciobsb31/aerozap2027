@@ -122,6 +122,11 @@ jobs:
             frontend:
               - 'frontend/**'
               - 'libs/typescript/**'
+              # O api-client é gerado do contrato: mudar o contrato precisa disparar a verificação
+              # de sincronia, senão o cliente fica mentindo sem ninguém perceber.
+              - 'docs/api-contracts/**'
+              - 'scripts/gerar-api-client.sh'
+              - 'scripts/lib/achatar-defs.mjs'
 
   # ---------------------------------------------------------------- serviços Java (um job por serviço)
   api-gateway:

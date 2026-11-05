@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/design-system",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "assets": [
+    "./src/estilos.scss",
+    "./src/lib/estilos/_tokens.scss",
+    "./src/lib/estilos/_base.scss"
+  ]
+}

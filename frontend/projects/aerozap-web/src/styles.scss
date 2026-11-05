@@ -1,0 +1,10 @@
+// Estilos globais da aerozap-web.
+//
+// Tokens, base e acessibilidade vêm do design system; aqui ficam só ajustes da casca da aplicação.
+// O caminho curto é possível por `stylePreprocessorOptions.includePaths` no angular.json.
+@use 'estilos';
+
+html,
+body {
+  min-height: 100%;
+}

@@ -1,0 +1,50 @@
+.inicio__chamada {
+  max-width: 44rem;
+  margin-bottom: var(--az-espaco-7);
+}
+
+.inicio__subtitulo {
+  font-size: var(--az-tamanho-lg);
+  color: var(--az-cor-texto-sutil);
+}
+
+.inicio__formulario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--az-espaco-3);
+}
+
+.inicio__campo {
+  flex: 1 1 22rem;
+}
+
+/* Alinha o botão com o campo, e não com o rótulo acima dele. A medida é a altura do rótulo mais o
+   espaço entre rótulo e campo; abaixo de 700px o botão desce para a própria linha e não precisa. */
+@media (min-width: 700px) {
+  .inicio__formulario az-botao {
+    margin-top: calc(var(--az-tamanho-sm) * var(--az-altura-linha) + var(--az-espaco-2));
+  }
+}
+
+.inicio__cartoes {
+  display: grid;
+  gap: var(--az-espaco-4);
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.inicio__exemplos {
+  margin: 0;
+  padding-left: var(--az-espaco-5);
+  color: var(--az-cor-texto-sutil);
+}
+
+.inicio__exemplos li + li {
+  margin-top: var(--az-espaco-2);
+}
+
+.inicio__estado-detalhe {
+  margin: var(--az-espaco-3) 0 var(--az-espaco-2);
+  font-size: var(--az-tamanho-sm);
+  color: var(--az-cor-texto-sutil);
+}
