@@ -4,7 +4,7 @@
 > sai dela por `bash scripts/rastreabilidade.sh`. Editar aqui é trabalho perdido:
 > a CI regera e compara.
 
-Requisitos do PRD: **104**. Cobertos **5**, parciais **22**, pendentes **77**. Atualizada em 2026-11-05.
+Requisitos do PRD: **104**. Cobertos **7**, parciais **26**, pendentes **71**. Atualizada em 2026-11-05.
 
 A contagem não é nota de desempenho. O produto está no marco M1 e a maior parte dos
 requisitos ainda não tem código — um requisito pendente com nota honesta vale mais do
@@ -35,13 +35,13 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 | ◐ | **RF-004** Perfil do usuário e preferências de viagem | Must | `AutenticacaoIntegrationTest.java` | Perfil e idioma existem; preferências de viagem, moeda e fuso entram com a AZ-024. |
 | ○ | **RF-005** Vínculo telefone-conta com verificação de posse do número | Must | — | Sem implementação ainda; entra no marco M2. |
 | ◐ | **RF-007** Isolamento: `user_id` vem do token; acesso a recurso de outro usuário é negado | Must | `AutenticacaoIntegrationTest.java`<br>`SegurancaIntegrationTest.java` | O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025. |
-| ○ | **RF-009** Plano Free com franquia de N consultas por período (padrão N=5, **configurável**) | Must | — | Sem implementação ainda; entra no marco M2. |
-| ○ | **RF-010** Saldo único compartilhado entre WhatsApp e Web; sem regras de consumo por canal | Must | — | Sem implementação ainda; entra no marco M2. |
-| ○ | **RF-011** Tipo de período configurável: trimestre-calendário (padrão, HIPÓTESE) ou janela móvel desde o cadastro | Must | — | Sem implementação ainda; entra no marco M2. |
-| ◐ | **RF-012** Débito único por pesquisa concluída com sucesso, idempotente (UNIQUE chave de idempotência + search_id) | Must | `ConsumidorIdempotenteConcorrenciaIntegrationTest.java` | O mecanismo de efeito único por chave está provado sob 24 entregas simultâneas. O débito por pesquisa é do M2. |
-| ◐ | **RF-013** Reserva → confirmação/liberação; falha interna ou de provedor não consome; reserva órfã expira | Must | `ReservaDeFranquiaConcorrenciaIntegrationTest.java` | Invariante da última consulta escrita antes da implementação: 32 requisições simultâneas, uma autorização. O serviço de franquia é do M2. |
-| ○ | **RF-014** Política configurável de "pesquisa concluída com sucesso" (parcial, zero resultados) | Must | — | Sem implementação ainda; entra no marco M2. |
-| ○ | **RF-015** Consulta de saldo, período e histórico de consumo pelo usuário (Web e WhatsApp); suporte vê o mesmo no Admin (RF-077) | Must | — | Sem implementação ainda; entra no marco M2. |
+| ◐ | **RF-009** Plano Free com franquia de N consultas por período (padrão N=5, **configurável**) | Must | `FranquiaIntegrationTest.java` | A franquia é dado do plano no banco, não constante no código. Publicar mudança sem deploy é a AZ-023. |
+| ◐ | **RF-010** Saldo único compartilhado entre WhatsApp e Web; sem regras de consumo por canal | Must | `FranquiaIntegrationTest.java` | O saldo é do usuário e não tem regra por canal. Com um canal só existindo hoje, a prova entre WhatsApp e Web é do M4. |
+| ◐ | **RF-011** Tipo de período configurável: trimestre-calendário (padrão, HIPÓTESE) ou janela móvel desde o cadastro | Must | `TipoDePeriodoTest.java` | Trimestre-calendário e janela móvel implementados e testados nas bordas da virada. A janela móvel precisa da data de cadastro, que depende da API interna da identidade. |
+| ● | **RF-012** Débito único por pesquisa concluída com sucesso, idempotente (UNIQUE chave de idempotência + search_id) | Must | `FranquiaConcorrenciaIntegrationTest.java`<br>`FranquiaIntegrationTest.java` | Débito único por chave de idempotência, provado inclusive com 32 chamadas idênticas simultâneas devolvendo a mesma reserva. |
+| ● | **RF-013** Reserva → confirmação/liberação; falha interna ou de provedor não consome; reserva órfã expira | Must | `FranquiaConcorrenciaIntegrationTest.java`<br>`ExpiracaoDeReservasIntegrationTest.java` | Reserva, confirmação e liberação; falha não consome; reserva órfã volta sozinha e não credita duas vezes. A última consulta disputada por 32 requisições autoriza uma. |
+| ◐ | **RF-014** Política configurável de "pesquisa concluída com sucesso" (parcial, zero resultados) | Must | `FranquiaIntegrationTest.java` | A política de conclusão é configuração (APENAS_COM_OFERTAS por padrão). Só terá efeito observável quando a pesquisa existir, no M3. |
+| ◐ | **RF-015** Consulta de saldo, período e histórico de consumo pelo usuário (Web e WhatsApp); suporte vê o mesmo no Admin (RF-077) | Must | `FranquiaIntegrationTest.java` | Saldo e período consultáveis pela API interna; a tela é da AZ-024 e o histórico de consumo, do M6. |
 | ○ | **RF-018** Planos, preço, duração, desconto, parcelamento, renovação e benefícios configuráveis sem novo deploy do backend | Must | — | Sem implementação ainda; entra no marco M2. |
 | ○ | **RF-070** Tela de plano e consumo: saldo, período, histórico, assinatura | Must | — | Sem implementação ainda; entra no marco M2. |
 | ○ | **RF-071** Preferências: idioma, moeda, país, fuso e canal de notificação | Must | — | Sem implementação ainda; entra no marco M2. |
@@ -52,7 +52,7 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 
 | | Requisito | Prio | Teste | Nota |
 | --- | --- | --- | --- | --- |
-| ○ | **RF-016** Saldo zero bloqueia nova pesquisa sem consumir e oferece Premium (antes do M7: "Premium em breve", PROPOSTA) | Must | — | Sem implementação ainda; entra no marco M3. |
+| ◐ | **RF-016** Saldo zero bloqueia nova pesquisa sem consumir e oferece Premium (antes do M7: "Premium em breve", PROPOSTA) | Must | `FranquiaIntegrationTest.java` | Saldo zero recusa com 409 usage-exhausted sem consumir nada. A oferta do Premium na interface é do M3. |
 | ◐ | **RF-019** Pesquisa nacional/internacional por origem, destino, datas, passageiros (adultos, crianças, bebês), cabine e moeda; ida e ida e volta | Must | `SearchIntentTest.java`<br>`PassengersTest.java` | Os campos da pesquisa e suas regras estão no contrato e validados; a execução da pesquisa é do M3. |
 | ○ | **RF-022** Filtros por preço, duração, escalas, horários, companhias e aeroportos, sobre resultado já obtido | Must | — | Sem implementação ainda; entra no marco M3. |
 | ○ | **RF-023** Ordenação por menor preço, menor duração e melhor equilíbrio preço/tempo | Must | — | Sem implementação ainda; entra no marco M3. |
@@ -177,12 +177,15 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java`
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ExtratorDeDatasTest.java`
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/GuardaDeInjecaoTest.java`
-- `apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java`
-- `apps/identity/src/test/java/br/com/aerozap/identity/EmissorDeAcessoTest.java`
-- `apps/identity/src/test/java/br/com/aerozap/identity/RotacaoConcorrenteIntegrationTest.java`
 - `apps/platform-core/src/test/java/br/com/aerozap/platformcore/ConsumidorIdempotenteConcorrenciaIntegrationTest.java`
 - `apps/platform-core/src/test/java/br/com/aerozap/platformcore/OutboxConcorrenciaIntegrationTest.java`
-- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/ReservaDeFranquiaConcorrenciaIntegrationTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ExpiracaoDeReservasIntegrationTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/TipoDePeriodoTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/EmissorDeAcessoTest.java`
+- `apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/RotacaoConcorrenteIntegrationTest.java`
 - `frontend/projects/aerozap-web/src/app/acessibilidade.spec.ts`
 - `frontend/projects/aerozap-web/src/app/app.spec.ts`
 - `frontend/projects/aerozap-web/src/app/sem-strings-fixas.spec.ts`

@@ -15,7 +15,7 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
       "nota": "Cadastro com e-mail e senha funciona de ponta a ponta. O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar."
     },
@@ -26,9 +26,9 @@
       "marco": "M2",
       "status": "COBERTO",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java",
-        "apps/identity/src/test/java/br/com/aerozap/identity/RotacaoConcorrenteIntegrationTest.java",
-        "apps/identity/src/test/java/br/com/aerozap/identity/EmissorDeAcessoTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/RotacaoConcorrenteIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/EmissorDeAcessoTest.java"
       ],
       "nota": "Acesso curto, refresh rotacionado com detecção de reuso que derruba a família, e limite de tentativas por conta. A rotação é provada também sob 16 renovações simultâneas."
     },
@@ -48,7 +48,7 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
       "nota": "Perfil e idioma existem; preferências de viagem, moeda e fuso entram com a AZ-024."
     },
@@ -77,7 +77,7 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java",
         "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java"
       ],
       "nota": "O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025."
@@ -89,7 +89,7 @@
       "marco": "M6",
       "status": "PARCIAL",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
       "nota": "Papéis são separados do plano e concedidos, nunca escolhidos no cadastro. MFA de administrador é do M6."
     },
@@ -98,76 +98,90 @@
       "titulo": "Plano Free com franquia de N consultas por período (padrão N=5, **configurável**)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "A franquia é dado do plano no banco, não constante no código. Publicar mudança sem deploy é a AZ-023."
     },
     {
       "id": "RF-010",
       "titulo": "Saldo único compartilhado entre WhatsApp e Web; sem regras de consumo por canal",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "O saldo é do usuário e não tem regra por canal. Com um canal só existindo hoje, a prova entre WhatsApp e Web é do M4."
     },
     {
       "id": "RF-011",
       "titulo": "Tipo de período configurável: trimestre-calendário (padrão, HIPÓTESE) ou janela móvel desde o cadastro",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/TipoDePeriodoTest.java"
+      ],
+      "nota": "Trimestre-calendário e janela móvel implementados e testados nas bordas da virada. A janela móvel precisa da data de cadastro, que depende da API interna da identidade."
     },
     {
       "id": "RF-012",
       "titulo": "Débito único por pesquisa concluída com sucesso, idempotente (UNIQUE chave de idempotência + search_id)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PARCIAL",
+      "status": "COBERTO",
       "testes": [
-        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/ConsumidorIdempotenteConcorrenciaIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
       ],
-      "nota": "O mecanismo de efeito único por chave está provado sob 24 entregas simultâneas. O débito por pesquisa é do M2."
+      "nota": "Débito único por chave de idempotência, provado inclusive com 32 chamadas idênticas simultâneas devolvendo a mesma reserva."
     },
     {
       "id": "RF-013",
       "titulo": "Reserva → confirmação/liberação; falha interna ou de provedor não consome; reserva órfã expira",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PARCIAL",
+      "status": "COBERTO",
       "testes": [
-        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/ReservaDeFranquiaConcorrenciaIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ExpiracaoDeReservasIntegrationTest.java"
       ],
-      "nota": "Invariante da última consulta escrita antes da implementação: 32 requisições simultâneas, uma autorização. O serviço de franquia é do M2."
+      "nota": "Reserva, confirmação e liberação; falha não consome; reserva órfã volta sozinha e não credita duas vezes. A última consulta disputada por 32 requisições autoriza uma."
     },
     {
       "id": "RF-014",
       "titulo": "Política configurável de \"pesquisa concluída com sucesso\" (parcial, zero resultados)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "A política de conclusão é configuração (APENAS_COM_OFERTAS por padrão). Só terá efeito observável quando a pesquisa existir, no M3."
     },
     {
       "id": "RF-015",
       "titulo": "Consulta de saldo, período e histórico de consumo pelo usuário (Web e WhatsApp); suporte vê o mesmo no Admin (RF-077)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "Saldo e período consultáveis pela API interna; a tela é da AZ-024 e o histórico de consumo, do M6."
     },
     {
       "id": "RF-016",
       "titulo": "Saldo zero bloqueia nova pesquisa sem consumir e oferece Premium (antes do M7: \"Premium em breve\", PROPOSTA)",
       "prioridade": "Must",
       "marco": "M3",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M3."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "Saldo zero recusa com 409 usage-exhausted sem consumir nada. A oferta do Premium na interface é do M3."
     },
     {
       "id": "RF-017",
@@ -955,7 +969,7 @@
       "marco": "M2",
       "status": "COBERTO",
       "testes": [
-        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
       "nota": "Aceite de Termos e de Política gravado com versão, data e origem no mesmo ato do cadastro."
     },

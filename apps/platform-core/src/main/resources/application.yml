@@ -7,7 +7,8 @@ spring:
     username: ${POSTGRES_USER:aerozap}
     password: ${POSTGRES_PASSWORD:}
   flyway:
-    schemas: platform_core
+    # Um schema por módulo (ADR-0002). O primeiro é o padrão das consultas sem prefixo.
+    schemas: platform_core,identidade
     create-schemas: true
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
@@ -69,3 +70,24 @@ aerozap:
   outbox:
     poll-interval-ms: 1000
     batch-size: 50
+
+  identidade:
+    token:
+      # Sem valor padrão de propósito: o módulo não sobe sem segredo configurado. Um padrão aqui
+      # é um padrão em produção no dia em que alguém esquecer de definir a variável.
+      segredo: ${JWT_SECRET:}
+      emissor: ${JWT_EMISSOR:https://aerozap.local/identidade}
+      publico: ${JWT_PUBLICO:aerozap-api}
+      # Acesso curto porque não é revogável; a sessão é longa porque é, e rotaciona a cada uso.
+      validade-do-acesso: 15m
+      validade-da-sessao: 30d
+
+  franquia:
+    # Decisões do PRD ainda em aberto (RN-02 e RN-12) entram como configuração, nunca como valor
+    # fixo no código: é o que permite responder depois sem migrar dados de período.
+    plano-padrao: FREE
+    tipo-de-periodo: TRIMESTRE_CALENDARIO
+    fuso: America/Sao_Paulo
+    expiracao-da-reserva: 15m
+    conclusao: APENAS_COM_OFERTAS
+    intervalo-de-expiracao-ms: 60000
