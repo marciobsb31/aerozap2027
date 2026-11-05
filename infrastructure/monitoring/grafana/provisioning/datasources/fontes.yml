@@ -1,0 +1,43 @@
+# AeroZap — fontes de dados do Grafana, provisionadas como código (AZ-013).
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: aerozap-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: 15s
+
+  - name: Loki
+    uid: aerozap-loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      # Liga o log ao rastro: o trace_id chega como metadado estruturado do OTLP.
+      derivedFields:
+        - name: TraceID
+          matcherType: label
+          matcherRegex: trace_id
+          datasourceUid: aerozap-tempo
+          url: "${__value.raw}"
+          urlDisplayLabel: Ver rastro
+
+  - name: Tempo
+    uid: aerozap-tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    jsonData:
+      # Liga o rastro ao log do mesmo serviço.
+      tracesToLogsV2:
+        datasourceUid: aerozap-loki
+        filterByTraceID: true
+        spanStartTimeShift: -5m
+        spanEndTimeShift: 5m
+        tags:
+          - key: service.name
+            value: service_name

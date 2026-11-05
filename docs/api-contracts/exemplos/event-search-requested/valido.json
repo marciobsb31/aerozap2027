@@ -1,0 +1,16 @@
+{
+  "searchId": "sch_01HZ",
+  "userId": "usr_01HZ",
+  "channel": "WHATSAPP",
+  "intent": {
+    "origin": "BSB",
+    "destination": "LIS",
+    "departureDate": "2026-07-10",
+    "passengers": {
+      "adults": 1,
+      "children": 0,
+      "infants": 0
+    }
+  },
+  "requestedAt": "2026-07-01T13:22:00Z"
+}

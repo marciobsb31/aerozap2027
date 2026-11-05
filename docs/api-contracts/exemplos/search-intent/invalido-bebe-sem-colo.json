@@ -1,0 +1,10 @@
+{
+  "origin": "BSB",
+  "destination": "LIS",
+  "departureDate": "2026-07-10",
+  "passengers": {
+    "adults": 1,
+    "children": 0,
+    "infants": 2
+  }
+}

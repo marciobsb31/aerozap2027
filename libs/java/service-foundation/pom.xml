@@ -24,10 +24,16 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jdbc</artifactId>
+      <!-- Opcional de propósito: só serviços com banco/mensageria declaram. O API Gateway não tem
+           nenhum dos dois, e arrastar este starter faria o Spring Boot exigir uma fonte de dados. -->
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-amqp</artifactId>
+      <!-- Opcional de propósito: só serviços com banco/mensageria declaram. O API Gateway não tem
+           nenhum dos dois, e arrastar este starter faria o Spring Boot exigir uma fonte de dados. -->
+      <optional>true</optional>
     </dependency>
 
     <dependency>

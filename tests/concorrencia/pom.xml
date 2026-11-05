@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>br.com.aerozap</groupId>
+    <artifactId>aerozap-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>harness-de-concorrencia</artifactId>
+  <name>AeroZap — harness de concorrência e dados sintéticos</name>
+  <description>
+    Ferramenta de teste (AZ-018): dispara N operações ao mesmo tempo e verifica invariantes, e gera
+    dados sintéticos que nunca podem ser de uma pessoa real. Não contém regra de negócio e não vai
+    para produção: os serviços a declaram com escopo de teste.
+  </description>
+
+  <dependencies>
+    <!-- O harness usa só a biblioteca padrão. Qualquer coisa além disso vira dependência de todo
+         módulo que escrever teste de concorrência, e ferramenta de teste pesada ninguém usa. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

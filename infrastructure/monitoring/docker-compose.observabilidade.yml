@@ -1,0 +1,148 @@
+# AeroZap — observabilidade local (AZ-013).
+#
+# Este arquivo NUNCA sobe sozinho: ele complementa o ambiente base. Use scripts/obs-up.sh, ou:
+#   docker compose --env-file .env --project-directory . \
+#     -f infrastructure/compose/docker-compose.yml \
+#     -f infrastructure/monitoring/docker-compose.observabilidade.yml up -d --wait
+#
+# O --project-directory . faz todos os caminhos abaixo valerem a partir da raiz do repositório.
+# Custo de memória: cerca de 2 GB somados. Retenção curta (72 h) de propósito.
+# Versões conferidas em 04/11/2026 com scripts/probe-tags.sh; nenhuma tag flutuante.
+
+name: aerozap
+
+services:
+  # Acrescenta ao RabbitMQ do ambiente base o plugin e a porta de métricas.
+  # Ao subir a observabilidade, o contêiner do RabbitMQ é recriado uma vez.
+  rabbitmq:
+    ports:
+      - "127.0.0.1:${RABBITMQ_PROMETHEUS_PORT:-15692}:15692"
+    volumes:
+      - ./infrastructure/monitoring/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+
+  prometheus:
+    image: prom/prometheus:v3.13.5   # linha LTS, suporte até 07/2027
+    container_name: aerozap-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=72h
+      - --web.enable-lifecycle
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/monitoring/prometheus/alertas.yml:/etc/prometheus/alertas.yml:ro
+      - prometheus-data:/prometheus
+    extra_hosts:
+      # Os serviços Java rodam na máquina, fora do Docker. No Docker Desktop já existe;
+      # esta linha garante o mesmo comportamento no Linux.
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:9090/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.2
+    container_name: aerozap-alertmanager
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "127.0.0.1:${ALERTMANAGER_PORT:-9093}:9093"
+    volumes:
+      - ./infrastructure/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:9093/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    mem_limit: 128m
+    cpus: 0.5
+    networks: [aerozap-net]
+
+  loki:
+    image: grafana/loki:3.7.9
+    container_name: aerozap-loki
+    restart: unless-stopped
+    # root evita erro de permissão no volume nomeado (a imagem roda como outro usuário). Só local.
+    user: "0:0"
+    command: ["-config.file=/etc/loki/loki.yml"]
+    ports:
+      - "127.0.0.1:${LOKI_PORT:-3100}:3100"
+    volumes:
+      - ./infrastructure/monitoring/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-data:/loki
+    # Sem health check: a imagem pode não ter cliente HTTP. A verificação real é obs-verify.sh.
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+  tempo:
+    # Linha 2.x de propósito. O Tempo 3 removeu ingester e compactor e passou a ingestão por
+    # Kafka, com agendador e trabalhadores de manutenção: arquitetura para escalar, que num
+    # ambiente local só acrescenta peça. Volta a 3.x quando a produção pedir (Fase 7).
+    image: grafana/tempo:2.10.10
+    container_name: aerozap-tempo
+    restart: unless-stopped
+    user: "0:0"
+    command: ["-config.file=/etc/tempo/tempo.yml"]
+    ports:
+      - "127.0.0.1:${TEMPO_PORT:-3200}:3200"
+      - "127.0.0.1:${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
+      - "127.0.0.1:${TEMPO_OTLP_GRPC_PORT:-4317}:4317"
+    volumes:
+      - ./infrastructure/monitoring/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+      - tempo-data:/var/tempo
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+  grafana:
+    image: grafana/grafana:13.2.5
+    container_name: aerozap-grafana
+    restart: unless-stopped
+    depends_on: [prometheus, loki, tempo]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-aerozap}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?defina GRAFANA_PASSWORD no .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_LOG_LEVEL: warn
+      # Sem internet no contêiner, a pré-instalação de plugins falha em DNS e atrasa a subida.
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      # Abre direto no painel de saúde.
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards-aerozap/aerozap-saude.json
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - ./infrastructure/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/monitoring/grafana/dashboards:/var/lib/grafana/dashboards-aerozap:ro
+      - grafana-data:/var/lib/grafana
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    mem_limit: 384m
+    cpus: 1.0
+    networks: [aerozap-net]
+
+volumes:
+  prometheus-data:
+  alertmanager-data:
+  loki-data:
+  tempo-data:
+  grafana-data:

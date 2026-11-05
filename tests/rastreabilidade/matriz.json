@@ -1,0 +1,1025 @@
+{
+  "versao": 1,
+  "atualizadoEm": "2026-11-05",
+  "origem": "docs/prd/PRD-v1.md",
+  "legenda": {
+    "COBERTO": "o requisito está implementado e há teste automatizado que falha se ele quebrar",
+    "PARCIAL": "parte do requisito tem teste; a nota diz o que falta e em que marco entra",
+    "PENDENTE": "ainda não implementado; nenhum teste é esperado"
+  },
+  "requisitos": [
+    {
+      "id": "RF-001",
+      "titulo": "Cadastro com credenciais (método a confirmar; PROPOSTA e-mail + senha)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Cadastro com e-mail e senha funciona de ponta a ponta. O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar."
+    },
+    {
+      "id": "RF-002",
+      "titulo": "Login/logout com access token curto e refresh token rotacionado; limitação de tentativas (brute force)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "COBERTO",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/RotacaoConcorrenteIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/EmissorDeAcessoTest.java"
+      ],
+      "nota": "Acesso curto, refresh rotacionado com detecção de reuso que derruba a família, e limite de tentativas por conta. A rotação é provada também sob 16 renovações simultâneas."
+    },
+    {
+      "id": "RF-003",
+      "titulo": "Recuperação de acesso",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M2."
+    },
+    {
+      "id": "RF-004",
+      "titulo": "Perfil do usuário e preferências de viagem",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Perfil e idioma existem; preferências de viagem, moeda e fuso entram com a AZ-024."
+    },
+    {
+      "id": "RF-005",
+      "titulo": "Vínculo telefone-conta com verificação de posse do número",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M2."
+    },
+    {
+      "id": "RF-006",
+      "titulo": "Trocar ou desvincular telefone com nova verificação",
+      "prioridade": "Should",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-007",
+      "titulo": "Isolamento: `user_id` vem do token; acesso a recurso de outro usuário é negado",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java",
+        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java"
+      ],
+      "nota": "O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025."
+    },
+    {
+      "id": "RF-008",
+      "titulo": "Papéis administrativos separados dos planos; MFA obrigatório para admin",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Papéis são separados do plano e concedidos, nunca escolhidos no cadastro. MFA de administrador é do M6."
+    },
+    {
+      "id": "RF-009",
+      "titulo": "Plano Free com franquia de N consultas por período (padrão N=5, **configurável**)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "A franquia é dado do plano no banco, não constante no código. Publicar mudança sem deploy é a AZ-023."
+    },
+    {
+      "id": "RF-010",
+      "titulo": "Saldo único compartilhado entre WhatsApp e Web; sem regras de consumo por canal",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "O saldo é do usuário e não tem regra por canal. Com um canal só existindo hoje, a prova entre WhatsApp e Web é do M4."
+    },
+    {
+      "id": "RF-011",
+      "titulo": "Tipo de período configurável: trimestre-calendário (padrão, HIPÓTESE) ou janela móvel desde o cadastro",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/TipoDePeriodoTest.java"
+      ],
+      "nota": "Trimestre-calendário e janela móvel implementados e testados nas bordas da virada. A janela móvel precisa da data de cadastro, que depende da API interna da identidade."
+    },
+    {
+      "id": "RF-012",
+      "titulo": "Débito único por pesquisa concluída com sucesso, idempotente (UNIQUE chave de idempotência + search_id)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "COBERTO",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "Débito único por chave de idempotência, provado inclusive com 32 chamadas idênticas simultâneas devolvendo a mesma reserva."
+    },
+    {
+      "id": "RF-013",
+      "titulo": "Reserva → confirmação/liberação; falha interna ou de provedor não consome; reserva órfã expira",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "COBERTO",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ExpiracaoDeReservasIntegrationTest.java"
+      ],
+      "nota": "Reserva, confirmação e liberação; falha não consome; reserva órfã volta sozinha e não credita duas vezes. A última consulta disputada por 32 requisições autoriza uma."
+    },
+    {
+      "id": "RF-014",
+      "titulo": "Política configurável de \"pesquisa concluída com sucesso\" (parcial, zero resultados)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "A política de conclusão é configuração (APENAS_COM_OFERTAS por padrão). Só terá efeito observável quando a pesquisa existir, no M3."
+    },
+    {
+      "id": "RF-015",
+      "titulo": "Consulta de saldo, período e histórico de consumo pelo usuário (Web e WhatsApp); suporte vê o mesmo no Admin (RF-077)",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "Saldo e período consultáveis pela API interna; a tela é da AZ-024 e o histórico de consumo, do M6."
+    },
+    {
+      "id": "RF-016",
+      "titulo": "Saldo zero bloqueia nova pesquisa sem consumir e oferece Premium (antes do M7: \"Premium em breve\", PROPOSTA)",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
+      ],
+      "nota": "Saldo zero recusa com 409 usage-exhausted sem consumir nada. A oferta do Premium na interface é do M3."
+    },
+    {
+      "id": "RF-017",
+      "titulo": "Premium sem contador comercial enquanto vigente e adimplente, com rate limit técnico anti-abuso",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-018",
+      "titulo": "Planos, preço, duração, desconto, parcelamento, renovação e benefícios configuráveis sem novo deploy do backend",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M2."
+    },
+    {
+      "id": "RF-019",
+      "titulo": "Pesquisa nacional/internacional por origem, destino, datas, passageiros (adultos, crianças, bebês), cabine e moeda; ida e ida e volta",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/SearchIntentTest.java",
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/PassengersTest.java"
+      ],
+      "nota": "Os campos da pesquisa e suas regras estão no contrato e validados; a execução da pesquisa é do M3."
+    },
+    {
+      "id": "RF-020",
+      "titulo": "Múltiplos destinos, conforme cobertura dos provedores",
+      "prioridade": "Could",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-021",
+      "titulo": "Datas flexíveis, períodos próximos, aeroportos alternativos e calendário de preços, quando suportados",
+      "prioridade": "Should",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-022",
+      "titulo": "Filtros por preço, duração, escalas, horários, companhias e aeroportos, sobre resultado já obtido",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-023",
+      "titulo": "Ordenação por menor preço, menor duração e melhor equilíbrio preço/tempo",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-024",
+      "titulo": "Cada oferta mostra fonte, horário da última verificação, moeda, condições e link de continuidade; preço revalidado antes do redirecionamento quando possível",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/OfertaETrechosTest.java",
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/ContratosPublicadosTest.java"
+      ],
+      "nota": "Fonte, horário de verificação, moeda e link são obrigatórios no contrato da oferta."
+    },
+    {
+      "id": "RF-025",
+      "titulo": "Pesquisa assíncrona: `search_id` + status (contrato define estados; DTC cita PENDING/PROCESSING/COMPLETED); acompanhamento por polling/SSE; mesmo contrato nos dois canais",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/ContratosPublicadosTest.java"
+      ],
+      "nota": "Envelope e estados publicados; o fluxo assíncrono é do M3."
+    },
+    {
+      "id": "RF-026",
+      "titulo": "Validação de entrada (IATA, datas, passageiros, ambiguidades) com mensagens de erro claras",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/SearchIntentTest.java",
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ExtratorDeDatasTest.java"
+      ],
+      "nota": "Validação de IATA, datas e passageiros no contrato e no interpretador; as mensagens de erro na tela são do M3."
+    },
+    {
+      "id": "RF-027",
+      "titulo": "Degradação controlada: mostrar resultados dos provedores disponíveis e indicar fontes que falharam",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/ProviderResultTest.java"
+      ],
+      "nota": "Falha de provedor é resultado tipado, não exceção — é o que permite mostrar o que deu certo e dizer o que falhou."
+    },
+    {
+      "id": "RF-028",
+      "titulo": "Histórico de pesquisas e ofertas consultadas, paginado, só do próprio usuário",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-029",
+      "titulo": "Adaptador simulado sempre rotulado DEMO em toda interface e mensagem",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/OfertaETrechosTest.java"
+      ],
+      "nota": "O campo demo é obrigatório na oferta e sobe até a interface; o rótulo na tela é do M3."
+    },
+    {
+      "id": "RF-030",
+      "titulo": "Pesquisa em milhas só com fonte autorizada e dado verificável (programa, pontos, taxas, classe, timestamp)",
+      "prioridade": "Could",
+      "marco": "— (bloqueado: decisão Milhas)",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Bloqueado por decisão em aberto; sem marco até a decisão."
+    },
+    {
+      "id": "RF-031",
+      "titulo": "Nenhum preço, horário, companhia, disponibilidade ou link que não venha de provedor",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "libs/java/event-contracts/src/test/java/br/com/aerozap/contracts/search/OfertaETrechosTest.java"
+      ],
+      "nota": "Nenhum preço existe no contrato sem provedor declarado."
+    },
+    {
+      "id": "RF-032",
+      "titulo": "Resultado vazio: estado informativo com sugestões (alterar datas/aeroportos)",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-033",
+      "titulo": "Executar pesquisa exige usuário autenticado; visitante vê página e formulário",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-034",
+      "titulo": "Consolidar e deduplicar ofertas preservando origem e condições de cada fonte",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-035",
+      "titulo": "Destaques \"mais barato\", \"melhor custo-benefício\" e \"mais rápido\", com algoritmo determinístico documentado e critério visível ao usuário",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-036",
+      "titulo": "Comparar ofertas lado a lado (preço, duração, escalas, fonte, condições disponíveis); limite de itens definido no design",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-037",
+      "titulo": "Comparação avançada (ex.: períodos próximos)",
+      "prioridade": "Could",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-038",
+      "titulo": "Qualquer destaque patrocinado é rotulado; remuneração não altera ranking ou recomendação",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-039",
+      "titulo": "Dinheiro e milhas em colunas separadas, sem conversão automática",
+      "prioridade": "Could",
+      "marco": "— (com RF-030)",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Bloqueado por decisão em aberto; sem marco até a decisão."
+    },
+    {
+      "id": "RF-040",
+      "titulo": "Interpretar texto em linguagem natural como `SearchIntent` estruturado validado por schema (Web: mesmo motor, Should em M3)",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java"
+      ],
+      "nota": "Interpretador v0 determinístico com 42 casos pt/es; o motor com LLM é do M4."
+    },
+    {
+      "id": "RF-041",
+      "titulo": "Pedir apenas dados essenciais faltantes, uma pergunta por vez",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java"
+      ],
+      "nota": "Dado incompleto gera pergunta, nunca pesquisa inventada — mês sem dia é o caso que prova."
+    },
+    {
+      "id": "RF-042",
+      "titulo": "Contexto de conversa com expiração e refinamentos (datas, passageiros, bagagem, escalas, orçamento, preferências)",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-043",
+      "titulo": "Áudio: validar formato, tamanho, duração e origem; transcrever; interpretar; validar",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-044",
+      "titulo": "Confirmar interpretação com o usuário em baixa confiança ou ambiguidade material, antes de pesquisar",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java"
+      ],
+      "nota": "Ambiguidade vira pergunta no v0; a confirmação com a pessoa é do M4."
+    },
+    {
+      "id": "RF-045",
+      "titulo": "Áudio ininteligível ou IA/transcrição indisponível: mensagem amigável pedindo texto ou novo áudio, sem consumo",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-046",
+      "titulo": "IA não autoriza pagamento, não altera plano/permissão, não executa SQL nem acessa credenciais; ferramentas allowlisted; defesa a prompt injection; nunca expõe dados de outros usuários",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/GuardaDeInjecaoTest.java"
+      ],
+      "nota": "Tipo selado sem forma que expresse \"mude o plano\", mais guarda de injeção. Avaliação de injeção indireta é do M4."
+    },
+    {
+      "id": "RF-047",
+      "titulo": "Criar e gerir alertas por linguagem natural",
+      "prioridade": "Should",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-048",
+      "titulo": "Usuário pode pedir para encerrar/esquecer o contexto da conversa",
+      "prioridade": "Should",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-049",
+      "titulo": "Registrar versão do prompt, modelo, tokens, latência e custo por interação",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java"
+      ],
+      "nota": "Registro de modelo, versão de prompt, tokens, latência e custo existe na porta de LLM; a métrica em produção é do M4."
+    },
+    {
+      "id": "RF-050",
+      "titulo": "Webhook valida assinatura/origem, responde rápido e processa em fila; adaptador trocável sem afetar IA/pesquisa",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-051",
+      "titulo": "Deduplicação por id externo; reentrega não cria duas mensagens nem duas pesquisas",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/ConsumidorIdempotenteConcorrenciaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/OutboxConcorrenciaIntegrationTest.java"
+      ],
+      "nota": "Reentrega não duplica efeito, provado com 24 entregas simultâneas. A deduplicação por id do WhatsApp é do M4."
+    },
+    {
+      "id": "RF-052",
+      "titulo": "Identificar telefone→conta; número não vinculado recebe orientação para criar conta/vincular e não pesquisa",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-053",
+      "titulo": "Resposta com resumo das melhores opções, \"buscando…\" se demorar, e link para detalhes na Web",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-054",
+      "titulo": "Continuar na Web a pesquisa iniciada no WhatsApp (mesmo `search_id` e histórico) sem novo consumo",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-055",
+      "titulo": "Franquia esgotada: mensagem clara, data de renovação e link para assinar",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-056",
+      "titulo": "Respeitar janela de atendimento e templates aprovados",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-057",
+      "titulo": "Status de entrega (enviado/entregue/lido/falha) quando o provedor informar",
+      "prioridade": "Could",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-058",
+      "titulo": "Usuário pode parar notificações proativas (opt-out) por resposta ou na Web",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-059",
+      "titulo": "Criar alerta por rota, período, moeda, preço-alvo e preferências, por conversa ou Web",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-060",
+      "titulo": "Pausar, reativar, editar e cancelar alertas",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-061",
+      "titulo": "Verificações em intervalos configuráveis, respeitando cotas e termos dos provedores; registrar histórico de verificações e variações",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-062",
+      "titulo": "Notificar queda, preço ≤ alvo ou mudança relevante, com cooldown e deduplicação; trazer fonte, horário e link",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-063",
+      "titulo": "Opt-in explícito registrado antes de notificar",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-064",
+      "titulo": "Limite de alertas ativos e frequência por plano, configurável",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-065",
+      "titulo": "Histórico de preço da rota na Web",
+      "prioridade": "Should",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-066",
+      "titulo": "Página inicial pública com proposta de valor, slogan e chamada para cadastro",
+      "prioridade": "Should",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-067",
+      "titulo": "Formulário de pesquisa com validação inline e estados processando, parcial, erro, vazio e saldo esgotado",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-068",
+      "titulo": "Cartões de oferta legíveis, com rótulo \"oferta, não passagem emitida\"",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-069",
+      "titulo": "Pesquisa em linguagem natural na Web",
+      "prioridade": "Should",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-070",
+      "titulo": "Tela de plano e consumo: saldo, período, histórico, assinatura",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M2."
+    },
+    {
+      "id": "RF-071",
+      "titulo": "Preferências: idioma, moeda, país, fuso e canal de notificação",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M2."
+    },
+    {
+      "id": "RF-072",
+      "titulo": "Gestão de alertas",
+      "prioridade": "Must",
+      "marco": "M5",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M5."
+    },
+    {
+      "id": "RF-073",
+      "titulo": "Responsivo e acessível (WCAG 2.1 AA: contraste, teclado, leitor de tela, linguagem simples)",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PARCIAL",
+      "testes": [
+        "frontend/projects/aerozap-web/src/app/acessibilidade.spec.ts"
+      ],
+      "nota": "axe-core sobre o DOM real em cinco cenários, pt e es. A auditoria WCAG completa das telas de pesquisa é do M3."
+    },
+    {
+      "id": "RF-074",
+      "titulo": "Logo: placeholder identificado até o arquivo original; slogan preservado",
+      "prioridade": "Must",
+      "marco": "M1",
+      "status": "COBERTO",
+      "testes": [
+        "frontend/projects/aerozap-web/src/app/app.spec.ts"
+      ],
+      "nota": "Placeholder de logo desenhado em CSS e identificado como provisório no README do frontend."
+    },
+    {
+      "id": "RF-075",
+      "titulo": "Aviso de transparência (comissão, ofertas não emitidas, termos e privacidade) em resultados e rodapé",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-076",
+      "titulo": "Dashboard: usuários, MRR, conversão, pesquisas, custo por pesquisa e disponibilidade",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-077",
+      "titulo": "Usuários: busca, detalhes, status, plano, consumo (saldo e histórico para suporte), bloqueio com efeito imediato nos dois canais",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-078",
+      "titulo": "Planos: preço, duração, benefícios, regras e publicação sem deploy",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-079",
+      "titulo": "Assinaturas e pagamentos: status, eventos, reembolsos e conciliação",
+      "prioridade": "Should",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-080",
+      "titulo": "Provedores: credenciais mascaradas, ambiente, cotas, prioridade, teste e saúde",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-081",
+      "titulo": "WhatsApp: adaptador, número, status, webhook e logs operacionais",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-082",
+      "titulo": "IA: modelo, prompts versionados, custos e métricas",
+      "prioridade": "Should",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-083",
+      "titulo": "Alertas: filas, execuções, falhas e reprocessamento autorizado",
+      "prioridade": "Should",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-084",
+      "titulo": "Auditoria: ator, ação, recurso, data, IP, resultado; toda alteração administrativa auditada",
+      "prioridade": "Must",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-085",
+      "titulo": "Exportação de relatórios",
+      "prioridade": "Could",
+      "marco": "M6",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M6."
+    },
+    {
+      "id": "RF-086",
+      "titulo": "Escolha de modalidade e checkout no gateway; nenhum dado de cartão armazenado no AeroZap",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-087",
+      "titulo": "Recorrência e renovação conforme modalidade",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-088",
+      "titulo": "Webhooks de pagamento idempotentes; pagamento falho não libera Premium; evento repetido não duplica benefício",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PARCIAL",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/ConsumidorIdempotenteConcorrenciaIntegrationTest.java"
+      ],
+      "nota": "O mecanismo que impede benefício duplicado está provado; o webhook de pagamento é do M7."
+    },
+    {
+      "id": "RF-089",
+      "titulo": "Cancelamento com acesso até o fim do período pago",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-090",
+      "titulo": "Inadimplência com período de tolerância e suspensão configuráveis",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-091",
+      "titulo": "Estorno/reembolso e conciliação",
+      "prioridade": "Should",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-092",
+      "titulo": "Web mostra assinatura, próxima cobrança e histórico de pagamentos; estado \"confirmando pagamento\"",
+      "prioridade": "Must",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-093",
+      "titulo": "Cupons de desconto geridos no Admin",
+      "prioridade": "Could",
+      "marco": "M7",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M7."
+    },
+    {
+      "id": "RF-094",
+      "titulo": "Toda UI e mensagem em pt-BR (padrão) e es desde a primeira versão; sem texto fixo no código; chaves completas verificadas no CI",
+      "prioridade": "Must",
+      "marco": "M1",
+      "status": "COBERTO",
+      "testes": [
+        "frontend/projects/aerozap-web/src/app/sem-strings-fixas.spec.ts",
+        "frontend/projects/design-system/src/lib/i18n/i18n.spec.ts"
+      ],
+      "nota": "Varredura falha com qualquer texto fora do dicionário; chave faltando em um idioma não compila."
+    },
+    {
+      "id": "RF-095",
+      "titulo": "Idioma, moeda, fuso e país tratados separadamente",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "PARCIAL",
+      "testes": [
+        "frontend/projects/design-system/src/lib/i18n/i18n.spec.ts"
+      ],
+      "nota": "Idioma é tratado separadamente desde já; moeda, fuso e país entram com o perfil, no M2."
+    },
+    {
+      "id": "RF-096",
+      "titulo": "WhatsApp responde no idioma preferido; na ausência, idioma da mensagem (PROPOSTA)",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-097",
+      "titulo": "Formatação localizada de data, número e moeda; horários de voo no fuso do aeroporto",
+      "prioridade": "Must",
+      "marco": "M3",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M3."
+    },
+    {
+      "id": "RF-098",
+      "titulo": "Templates de WhatsApp e e-mails transacionais em pt/es; copy es revisada por falante nativo",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-099",
+      "titulo": "Aceite versionado e registrado de Termos de Uso e Política de Privacidade no cadastro",
+      "prioridade": "Must",
+      "marco": "M2",
+      "status": "COBERTO",
+      "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Aceite de Termos e de Política gravado com versão, data e origem no mesmo ato do cadastro."
+    },
+    {
+      "id": "RF-100",
+      "titulo": "Aviso de uso de áudio antes do primeiro áudio; exigir ciência ou apenas informar conforme parecer jurídico (configurável)",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-101",
+      "titulo": "Retenção configurável por categoria (mensagens, áudio, transcrição, logs, histórico) com expurgo automático",
+      "prioridade": "Must",
+      "marco": "M4",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M4."
+    },
+    {
+      "id": "RF-102",
+      "titulo": "Minimização dos dados enviados à IA; logs sem tokens, senhas, áudio ou dados pessoais desnecessários",
+      "prioridade": "Must",
+      "marco": "M1",
+      "status": "COBERTO",
+      "testes": [
+        "libs/java/observability-starter/src/test/java/br/com/aerozap/observability/logging/MascaradorDeDadosSensiveisTest.java",
+        "libs/java/observability-starter/src/test/java/br/com/aerozap/observability/logging/MensagemMascaradaConverterTest.java"
+      ],
+      "nota": "Mascaramento no log provado em 21 casos; a minimização do que vai para a IA é reforçada pela porta de LLM."
+    },
+    {
+      "id": "RF-103",
+      "titulo": "Direitos do titular: acesso/exportação, correção e exclusão de conta e dados, com canal de contato; guarda mínima de registros exigidos por lei (a validar com jurídico)",
+      "prioridade": "Must",
+      "marco": "M8",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M8."
+    },
+    {
+      "id": "RF-104",
+      "titulo": "Revisão jurídica de LGPD, termos e política concluída antes do release",
+      "prioridade": "Must",
+      "marco": "M8",
+      "status": "PENDENTE",
+      "testes": [],
+      "nota": "Sem implementação ainda; entra no marco M8."
+    }
+  ]
+}

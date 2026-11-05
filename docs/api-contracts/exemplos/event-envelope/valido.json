@@ -1,0 +1,9 @@
+{
+  "eventId": "9f1c2a44-5e31-4a6a-9a8d-2c0f6b1e77aa",
+  "eventType": "search.completed",
+  "schemaVersion": 1,
+  "occurredAt": "2026-07-01T13:22:19Z",
+  "correlationId": "7b3a1c90-0f2e-4c6b-9d41-5a2f8e3b6c11",
+  "aggregateId": "sch_01HZ",
+  "payload": "{\"searchId\":\"sch_01HZ\"}"
+}

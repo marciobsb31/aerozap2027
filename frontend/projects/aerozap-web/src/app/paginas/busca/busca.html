@@ -1,0 +1,10 @@
+@if (consulta()) {
+  <h1>{{ i18n.t('busca.titulo', { consulta: consulta() }) }}</h1>
+} @else {
+  <h1>{{ i18n.t('busca.semConsulta') }}</h1>
+}
+
+<az-cartao [titulo]="i18n.t('busca.aviso.titulo')" [nivelDoTitulo]="2">
+  <p>{{ i18n.t('busca.aviso.texto') }}</p>
+  <a routerLink="/">{{ i18n.t('busca.voltar') }}</a>
+</az-cartao>

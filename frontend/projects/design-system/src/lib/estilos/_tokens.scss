@@ -1,0 +1,160 @@
+// Tokens do design system AeroZap.
+//
+// Tudo é variável CSS (e não variável Sass) de propósito: o tema precisa trocar em tempo de
+// execução, sem recompilar e sem recarregar a página. O mesmo motivo vale para o idioma.
+//
+// Direção visual: céu noturno de cabine (índigo profundo) com o âmbar de cartão de embarque como
+// cor de ação. O verde fica reservado para estado de canal (WhatsApp conectado), nunca para botão,
+// para que "verde" signifique sempre a mesma coisa no produto.
+
+:root {
+  // ---- paleta de marca
+  --az-indigo-950: #0b1020;
+  --az-indigo-900: #141b36;
+  --az-indigo-800: #1e2a52;
+  --az-indigo-600: #35488c;
+  --az-indigo-300: #9eb0e8;
+  --az-indigo-100: #e3e8fb;
+  --az-indigo-050: #f3f5fe;
+
+  --az-ambar-600: #b26a00;
+  --az-ambar-500: #e08700;
+  --az-ambar-400: #ffa41b;
+  --az-ambar-100: #fff1d9;
+
+  --az-verde-600: #1f8a53;
+  --az-verde-100: #e0f5e9;
+  --az-vermelho-600: #b3261e;
+  --az-vermelho-100: #fde8e6;
+
+  --az-cinza-000: #ffffff;
+  --az-cinza-050: #f7f8fa;
+  --az-cinza-100: #eceef3;
+  --az-cinza-300: #c6cad6;
+  --az-cinza-500: #717888;
+  --az-cinza-700: #40465a;
+  --az-cinza-900: #1a1e2b;
+
+  // ---- papéis semânticos (tema claro)
+  --az-cor-fundo: var(--az-cinza-050);
+  --az-cor-superficie: var(--az-cinza-000);
+  --az-cor-superficie-sutil: var(--az-indigo-050);
+  --az-cor-borda: var(--az-cinza-100);
+  --az-cor-borda-forte: var(--az-cinza-300);
+  --az-cor-texto: var(--az-cinza-900);
+  --az-cor-texto-sutil: var(--az-cinza-500);
+  --az-cor-texto-invertido: var(--az-cinza-000);
+
+  --az-cor-marca: var(--az-indigo-800);
+  --az-cor-marca-forte: var(--az-indigo-900);
+  --az-cor-acao: var(--az-ambar-500);
+  --az-cor-acao-forte: var(--az-ambar-600);
+  --az-cor-acao-texto: var(--az-indigo-950);
+  --az-cor-foco: var(--az-indigo-600);
+
+  --az-cor-sucesso: var(--az-verde-600);
+  --az-cor-sucesso-fundo: var(--az-verde-100);
+  --az-cor-erro: var(--az-vermelho-600);
+  --az-cor-erro-fundo: var(--az-vermelho-100);
+  --az-cor-aviso: var(--az-ambar-600);
+  --az-cor-aviso-fundo: var(--az-ambar-100);
+
+  // ---- tipografia
+  --az-fonte-texto: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --az-fonte-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
+
+  --az-tamanho-xs: 0.75rem;
+  --az-tamanho-sm: 0.875rem;
+  --az-tamanho-md: 1rem;
+  --az-tamanho-lg: 1.125rem;
+  --az-tamanho-xl: 1.375rem;
+  --az-tamanho-2xl: 1.75rem;
+  --az-tamanho-3xl: 2.25rem;
+
+  --az-peso-normal: 400;
+  --az-peso-medio: 500;
+  --az-peso-forte: 650;
+  --az-altura-linha: 1.55;
+  --az-altura-linha-titulo: 1.2;
+
+  // ---- espaçamento (escala de 4px)
+  --az-espaco-1: 0.25rem;
+  --az-espaco-2: 0.5rem;
+  --az-espaco-3: 0.75rem;
+  --az-espaco-4: 1rem;
+  --az-espaco-5: 1.5rem;
+  --az-espaco-6: 2rem;
+  --az-espaco-7: 3rem;
+  --az-espaco-8: 4rem;
+
+  // ---- forma e profundidade
+  --az-raio-sm: 6px;
+  --az-raio-md: 10px;
+  --az-raio-lg: 16px;
+  --az-raio-cheio: 999px;
+
+  --az-sombra-1: 0 1px 2px rgb(11 16 32 / 8%);
+  --az-sombra-2: 0 4px 14px rgb(11 16 32 / 10%);
+  --az-sombra-3: 0 12px 32px rgb(11 16 32 / 14%);
+
+  --az-borda-foco: 2px;
+  --az-largura-conteudo: 72rem;
+  --az-transicao: 160ms cubic-bezier(0.2, 0, 0.2, 1);
+  --az-alvo-toque: 44px; // mínimo confortável de toque (WCAG 2.2, 2.5.8)
+}
+
+// Tema escuro: automático pelo sistema, a não ser que a pessoa tenha fixado o tema claro.
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --az-cor-fundo: var(--az-indigo-950);
+    --az-cor-superficie: var(--az-indigo-900);
+    --az-cor-superficie-sutil: var(--az-indigo-800);
+    --az-cor-borda: #2a3660;
+    --az-cor-borda-forte: #44528c;
+    --az-cor-texto: #eef1fb;
+    --az-cor-texto-sutil: var(--az-indigo-300);
+    --az-cor-texto-invertido: var(--az-indigo-950);
+
+    --az-cor-marca: var(--az-indigo-300);
+    --az-cor-marca-forte: var(--az-indigo-100);
+    --az-cor-acao: var(--az-ambar-400);
+    --az-cor-acao-forte: var(--az-ambar-500);
+    --az-cor-acao-texto: var(--az-indigo-950);
+    --az-cor-foco: var(--az-ambar-400);
+
+    --az-cor-sucesso: #5fd199;
+    --az-cor-sucesso-fundo: #103a2e;
+    --az-cor-erro: #ff9a92;
+    --az-cor-erro-fundo: #3d1c1a;
+    --az-cor-aviso: var(--az-ambar-400);
+    --az-cor-aviso-fundo: #3b2a09;
+
+    --az-sombra-1: 0 1px 2px rgb(0 0 0 / 40%);
+    --az-sombra-2: 0 4px 14px rgb(0 0 0 / 45%);
+    --az-sombra-3: 0 12px 32px rgb(0 0 0 / 50%);
+  }
+}
+
+// Tema escuro fixado pela pessoa, independente do sistema.
+:root[data-tema='escuro'] {
+  --az-cor-fundo: var(--az-indigo-950);
+  --az-cor-superficie: var(--az-indigo-900);
+  --az-cor-superficie-sutil: var(--az-indigo-800);
+  --az-cor-borda: #2a3660;
+  --az-cor-borda-forte: #44528c;
+  --az-cor-texto: #eef1fb;
+  --az-cor-texto-sutil: var(--az-indigo-300);
+  --az-cor-texto-invertido: var(--az-indigo-950);
+  --az-cor-marca: var(--az-indigo-300);
+  --az-cor-marca-forte: var(--az-indigo-100);
+  --az-cor-acao: var(--az-ambar-400);
+  --az-cor-acao-forte: var(--az-ambar-500);
+  --az-cor-acao-texto: var(--az-indigo-950);
+  --az-cor-foco: var(--az-ambar-400);
+  --az-cor-sucesso: #5fd199;
+  --az-cor-sucesso-fundo: #103a2e;
+  --az-cor-erro: #ff9a92;
+  --az-cor-erro-fundo: #3d1c1a;
+  --az-cor-aviso: var(--az-ambar-400);
+  --az-cor-aviso-fundo: #3b2a09;
+}

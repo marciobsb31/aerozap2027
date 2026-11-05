@@ -18,17 +18,28 @@
   <description>Versões e módulos Java do AeroZap (ADR-0001, ADR-0003)</description>
 
   <properties>
-    <!-- ADR-0003: começa em Java 21 (fallback). Para o Java 25 LTS, troque apenas esta linha após o spike da AZ-014. -->
-    <java.version>21</java.version>
+    <!-- ADR-0003: Java 25 LTS, confirmado pelo spike da AZ-014 em 04/11/2026 (build e testes verdes).
+         O fallback para 21 continua possível trocando apenas esta linha. -->
+    <java.version>25</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <archunit.version>1.4.1</archunit.version>
     <springdoc.version>3.0.0</springdoc.version>
+    <loki4j.version>2.1.0</loki4j.version>
+    <!-- O Spring Boot 4.1.2 traz a 5.30.0, com vulnerabilidades de gravidade alta (GHSA-93j5-89vc-pph4 e outras).
+         Corrigidas a partir da 5.34.0. Retire esta linha quando o Spring Boot trouxer versão corrigida. -->
+    <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
   </properties>
 
   <modules>
     <module>libs/java/event-contracts</module>
     <module>libs/java/service-foundation</module>
+    <module>libs/java/observability-starter</module>
     <module>apps/platform-core</module>
+    <module>apps/api-gateway</module>
+    <module>apps/conversation-ai</module>
+    <!-- Ferramenta de teste (AZ-018). Não vai para produção: os serviços a declaram com escopo
+         de teste, e o POM dela não produz artefato publicável. -->
+    <module>tests/concorrencia</module>
   </modules>
 
   <dependencyManagement>
@@ -42,6 +53,21 @@
         <groupId>br.com.aerozap</groupId>
         <artifactId>service-foundation</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.com.aerozap</groupId>
+        <artifactId>observability-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.com.aerozap</groupId>
+        <artifactId>harness-de-concorrencia</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.loki4j</groupId>
+        <artifactId>loki-logback-appender</artifactId>
+        <version>${loki4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.tngtech.archunit</groupId>

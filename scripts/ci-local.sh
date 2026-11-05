@@ -7,7 +7,7 @@ erro(){ echo "✗ $1" >&2; FALHAS=$((FALHAS+1)); }
 
 passo "Lint dos scripts de shell"
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S warning scripts/*.sh && echo "✓ shellcheck" || erro "shellcheck"
+  shellcheck -S warning scripts/*.sh scripts/lib/*.sh && echo "✓ shellcheck" || erro "shellcheck"
 else
   echo "• shellcheck não instalado; o CI executa este passo."
 fi
@@ -15,13 +15,21 @@ fi
 passo "Compose válido"
 TMP_ENV=$(mktemp)
 cp .env.example "$TMP_ENV"
-docker compose --env-file "$TMP_ENV" -f infrastructure/compose/docker-compose.yml config --quiet && echo "✓ compose config" || erro "compose config"
+docker compose --env-file "$TMP_ENV" -f infrastructure/compose/docker-compose.yml config --quiet && echo "✓ compose config (base)" || erro "compose config (base)"
+if [ -f infrastructure/monitoring/docker-compose.observabilidade.yml ]; then
+  docker compose --env-file "$TMP_ENV" --project-directory . \
+    -f infrastructure/compose/docker-compose.yml \
+    -f infrastructure/monitoring/docker-compose.observabilidade.yml config --quiet \
+    && echo "✓ compose config (base + observabilidade)" || erro "compose config (observabilidade)"
+fi
 rm -f "$TMP_ENV"
 
 passo "Imagens com versão fixada"
-F=infrastructure/compose/docker-compose.yml
-if grep -nE '^\s*image:' "$F" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then erro "imagem sem tag de versão"; else echo "✓ todas com tag"; fi
-if grep -n ':latest' "$F"; then erro "tag latest"; fi
+for F in $(find infrastructure -name 'docker-compose*.yml' | sort); do
+  if grep -nE '^\s*image:' "$F" | sed 's/#.*//' | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then erro "imagem sem tag de versão em $F"; fi
+  if grep -n ':latest' "$F"; then erro "tag latest em $F"; fi
+done
+echo "✓ tags conferidas"
 
 passo "Nenhum .env versionado"
 if ! ARQUIVOS=$(git ls-files 2>/dev/null); then erro "não é um repositório Git"

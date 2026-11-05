@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Log do platform-core. Toda a configuração vive na biblioteca observability-starter, para que
+  os cinco serviços tenham o mesmo comportamento: mensagem mascarada, identificador de
+  correlação no console e envio ao Loki quando o perfil "observabilidade" está ativo.
+-->
+<configuration>
+  <include resource="br/com/aerozap/observability/logback-base.xml"/>
+</configuration>

@@ -1,0 +1,7 @@
+{
+  "searchId": "sch_01HZ",
+  "userId": "usr_01HZ",
+  "reason": "ALL_PROVIDERS_FAILED",
+  "detail": "2 provedores com erro 5xx",
+  "failedAt": "2026-07-01T13:22:25Z"
+}

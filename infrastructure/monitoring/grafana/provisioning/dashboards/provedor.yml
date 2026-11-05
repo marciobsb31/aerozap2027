@@ -1,0 +1,14 @@
+# AeroZap — carrega os painéis versionados em infrastructure/monitoring/grafana/dashboards (AZ-013).
+apiVersion: 1
+
+providers:
+  - name: aerozap
+    orgId: 1
+    folder: AeroZap
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards-aerozap
+      foldersFromFilesStructure: false

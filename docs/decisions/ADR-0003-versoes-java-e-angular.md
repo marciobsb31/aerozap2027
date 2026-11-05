@@ -36,3 +36,44 @@ Pipeline verde na versão escolhida; relatório curto do spike anexado ao DELIVE
 
 ## Nota de implementação (2026-11-03)
 O Product Owner informou que o JDK instalado na máquina de desenvolvimento é o **Java 21**. Conforme o fallback previsto nesta ADR, o projeto **começa em Java 21** (`release` 21) com Spring Boot 4.1.x, e a CI usa o JDK 21. A versão fica em uma única propriedade do POM pai, de modo que a passagem para o **Java 25 LTS** é uma troca de uma linha, a fazer quando o JDK 25 estiver instalado e o spike da AZ-014 confirmar a compatibilidade das dependências. A decisão de adotar o Java 25 como alvo continua valendo.
+
+## Nota de implementação (2026-11-04) — spike concluído, alvo Java 25 adotado
+
+O spike da AZ-014 foi executado e o alvo passou de 21 para **25**.
+
+**Evidência** (`logs/build.log`, 04/11/2026 10:11, `bash scripts/build.sh --java25`): `BUILD SUCCESS`
+nos quatro módulos, com `maven.compiler.release` em 25. Todos os testes verdes, incluindo os de
+integração com Testcontainers (PostgreSQL e RabbitMQ) e os de arquitetura: `event-contracts` 3,
+`service-foundation` 4, `observability-starter` 21 e `platform-core` 11. Nenhum aviso de
+incompatibilidade de dependência — Spring Boot 4.1.2, Flyway, Testcontainers, driver PostgreSQL,
+cliente RabbitMQ, Micrometer/OpenTelemetry, springdoc e ArchUnit.
+
+**Ressalva.** A compilação usou o JDK 26.0.2 com `--release 25`, porque o `JAVA_HOME` da máquina
+apontava para um JDK 25 removido. Isso garante bytecode e API de Java 25, mas a execução **sobre
+um JDK 25** fica comprovada pela CI, que usa o Temurin 25 no fluxo Java.
+
+**Reversão**, se algo aparecer em produção: trocar `java.version` para 21 no POM pai e a
+`java-version` no fluxo `java-service.yml`. O `scripts/build.sh --java=21` testa o caminho de
+volta sem alterar o POM.
+
+
+## Nota de implementação (2026-11-04) — Angular 22 adotado na AZ-016
+
+A regra desta ADR ("a major estável mais recente que ainda tenha pelo menos 12 meses de suporte
+restante na data de AZ-016") foi aplicada hoje, com a tabela consultada na data, como a própria
+ADR mandava.
+
+**Consulta.** A major mais recente no npm é a **22** (`22.2.4`); a 21 está em `21.2.26`. O Angular
+mudou para um major por ano a partir da **23, prevista para junho de 2027** — não há 23 em 2026.
+A **22 tem suporte ativo até junho de 2027 e LTS até junho de 2028**, cerca de 20 meses restantes.
+A 21 sai de LTS antes disso.
+
+**Decisão.** Angular **22.2.x**, com TypeScript `strict` ligado explicitamente no `tsconfig.json`
+do workspace (o `ng new` da 22 não o liga por padrão). Node **26 LTS** na CI: o 22 saiu do suporte
+ativo e recebe só correção de segurança até abril de 2027.
+
+**Evidência**: `frontend/package.json`, `.github/workflows/frontend.yml`,
+`docs/backlog/reports/AZ-016-delivery-report.md`. Build de produção, 57 testes e lint verdes.
+
+**Reversão**: `ng update @angular/core@21 @angular/cli@21` em tarefa dedicada, como a ADR já prevê
+para mudança de major.

@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/flight-offer.schema.json",
+  "title": "FlightOffer",
+  "description": "Oferta de voo normalizada. Não é reserva: a plataforma pesquisa e encaminha.",
+  "type": "object",
+  "required": [
+    "offerId",
+    "provider",
+    "demo",
+    "totalPrice",
+    "itineraries",
+    "checkedAt"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "money": {
+      "type": "object",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "required": [
+        "origin",
+        "destination",
+        "departure",
+        "arrival",
+        "marketingCarrier",
+        "flightNumber"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "destination": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "departure": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "arrival": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "marketingCarrier": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2}$"
+        },
+        "flightNumber": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cabin": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "ECONOMY",
+            "PREMIUM_ECONOMY",
+            "BUSINESS",
+            "FIRST",
+            null
+          ]
+        },
+        "aircraft": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "itinerary": {
+      "type": "object",
+      "required": [
+        "segments"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/segment"
+          }
+        }
+      },
+      "description": "Os segmentos se encadeiam: o destino de um é a origem do seguinte."
+    }
+  },
+  "properties": {
+    "offerId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Fonte da oferta. Obrigatório: preço sem fonte não é exibível."
+    },
+    "demo": {
+      "type": "boolean",
+      "description": "Verdadeiro em dado simulado. Sobe até a interface e a mensagem."
+    },
+    "totalPrice": {
+      "$ref": "#/$defs/money"
+    },
+    "itineraries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/itinerary"
+      },
+      "description": "Um em ida simples, dois em ida e volta."
+    },
+    "deepLink": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "fareConditions": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "checkedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando o provedor devolveu este preço."
+    }
+  }
+}

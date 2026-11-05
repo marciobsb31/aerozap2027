@@ -32,22 +32,39 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lint dos scripts de shell
-        run: shellcheck -S warning scripts/*.sh
+        run: shellcheck -S warning scripts/*.sh scripts/lib/*.sh
 
       - name: Compose válido
         run: |
           cp .env.example .env
           docker compose --env-file .env -f infrastructure/compose/docker-compose.yml config --quiet
+          if [ -f infrastructure/monitoring/docker-compose.observabilidade.yml ]; then
+            docker compose --env-file .env --project-directory . \
+              -f infrastructure/compose/docker-compose.yml \
+              -f infrastructure/monitoring/docker-compose.observabilidade.yml config --quiet
+          fi
 
       - name: Todas as imagens com versão fixada (sem latest)
         run: |
-          f=infrastructure/compose/docker-compose.yml
-          if grep -nE '^\s*image:' "$f" | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
-            echo "::error::imagem sem tag de versão no Compose"; exit 1
-          fi
-          if grep -n ':latest' "$f"; then
-            echo "::error::tag latest no Compose"; exit 1
-          fi
+          falhou=0
+          for f in $(find infrastructure -name 'docker-compose*.yml' | sort); do
+            if grep -nE '^\s*image:' "$f" | sed 's/#.*//' | grep -vE 'image:\s*\S+:[0-9A-Za-z][^ :]*\s*$'; then
+              echo "::error file=$f::imagem sem tag de versão"; falhou=1
+            fi
+            if grep -n ':latest' "$f"; then
+              echo "::error file=$f::tag latest"; falhou=1
+            fi
+          done
+          exit "$falhou"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      # A matriz é a promessa de que nenhum requisito some do radar e de que nenhum status existe
+      # sem teste que o sustente. Verificada sempre, não só quando alguém lembra (AZ-018).
+      - name: Matriz de rastreabilidade (requisito → teste → evidência)
+        run: bash scripts/rastreabilidade.sh --conferir
 
       - name: Nenhum arquivo .env versionado
         run: |
@@ -61,9 +78,6 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Exige o "Dependency graph" ativo (Settings > Advanced Security). Enquanto não estiver, a falha é tolerada.
-    # Depois de ativar o grafo, REMOVA a linha abaixo para a verificação voltar a bloquear.
-    continue-on-error: true
     permissions:
       contents: read
       pull-requests: write
@@ -102,6 +116,9 @@ jobs:
               - 'apps/platform-core/**'
               - 'libs/java/**'
               - 'pom.xml'
+              # O harness de concorrência (AZ-018) roda contra este serviço: mexer nele tem de
+              # disparar o job que o executa.
+              - 'tests/concorrencia/**'
             search:
               - 'apps/search/**'
               - 'libs/java/**'
@@ -117,6 +134,11 @@ jobs:
             frontend:
               - 'frontend/**'
               - 'libs/typescript/**'
+              # O api-client é gerado do contrato: mudar o contrato precisa disparar a verificação
+              # de sincronia, senão o cliente fica mentindo sem ninguém perceber.
+              - 'docs/api-contracts/**'
+              - 'scripts/gerar-api-client.sh'
+              - 'scripts/lib/achatar-defs.mjs'
 
   # ---------------------------------------------------------------- serviços Java (um job por serviço)
   api-gateway:

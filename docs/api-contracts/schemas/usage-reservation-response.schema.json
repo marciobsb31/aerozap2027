@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aerozap.com.br/schemas/v1/usage-reservation-response.schema.json",
+  "title": "ReservationResponse",
+  "description": "Resposta das operações de reserva. Franquia esgotada é erro 409, não esta resposta.",
+  "type": "object",
+  "required": [
+    "reservationId",
+    "status",
+    "periodId",
+    "remaining"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "reservationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "RESERVED",
+        "CONFIRMED",
+        "RELEASED",
+        "EXPIRED"
+      ]
+    },
+    "periodId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "remaining": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expiresAt": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "RESERVED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "expiresAt"
+        ],
+        "properties": {
+          "expiresAt": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
