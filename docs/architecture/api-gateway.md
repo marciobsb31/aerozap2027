@@ -120,3 +120,15 @@ Evidência em `logs/dev-gateway-check.log`.
 - **Limite por origem, não por usuário.** Um limite por usuário autenticado é outro filtro, a
   entrar quando houver identidade de verdade (AZ-020).
 - **Uma rota configurada.** As demais entram conforme os serviços nascem.
+
+## Identidade para os serviços (AZ-025)
+
+A borda é a única que escreve `X-Usuario-Id`: descarta o valor enviado pelo cliente, em qualquer
+capitalização, e o preenche com o `sub` do token validado. Os serviços confiam nesse cabeçalho, e por
+isso **só podem ser alcançáveis pela borda**. Isolar a rede é condição do ambiente exposto (AZ-083).
+
+Sem token, só passam por POST: `registrar`, `entrar`, `renovar` e `sair`, em `/api/plataforma/v1/auth/`.
+Quem renova não deve enviar o token de acesso vencido, porque a borda recusaria a requisição.
+
+A borda só encaminha o que está sob `/api` no serviço, então `/internal/**` fica fora de alcance.
+A prova de ponta a ponta é `scripts/dev-isolamento-check.sh`.
