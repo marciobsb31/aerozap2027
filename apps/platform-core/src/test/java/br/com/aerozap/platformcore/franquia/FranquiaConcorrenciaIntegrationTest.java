@@ -78,8 +78,9 @@ class FranquiaConcorrenciaIntegrationTest extends AbstractIntegrationTest {
                 reservar(usuario, "mesma-busca", "mesma-chave").dados().get("reservationId"));
 
         assertThat(resultado.totalDeFalhas()).as(resultado.resumo()).isZero();
-        assertThat(resultado.sucessos()).as("todas devolvem a MESMA reserva")
-                .doesNotHaveDuplicates().hasSize(1);
+        assertThat(resultado.sucessos()).as("todas respondem").hasSize(CONCORRENTES);
+        assertThat(java.util.Set.copyOf(resultado.sucessos())).as("todas devolvem a MESMA reserva")
+                .hasSize(1);
         assertThat(saldoDe(usuario))
                 .as("uma reserva, um débito, mesmo com 32 chamadas idênticas ao mesmo tempo")
                 .isEqualTo(4);
