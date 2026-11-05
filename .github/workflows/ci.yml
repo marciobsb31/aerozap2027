@@ -98,6 +98,7 @@ jobs:
     outputs:
       api-gateway: ${{ steps.f.outputs.api-gateway }}
       platform-core: ${{ steps.f.outputs.platform-core }}
+      identity: ${{ steps.f.outputs.identity }}
       search: ${{ steps.f.outputs.search }}
       conversation-ai: ${{ steps.f.outputs.conversation-ai }}
       messaging: ${{ steps.f.outputs.messaging }}
@@ -118,6 +119,11 @@ jobs:
               - 'pom.xml'
               # O harness de concorrência (AZ-018) roda contra este serviço: mexer nele tem de
               # disparar o job que o executa.
+              - 'tests/concorrencia/**'
+            identity:
+              - 'apps/identity/**'
+              - 'libs/java/**'
+              - 'pom.xml'
               - 'tests/concorrencia/**'
             search:
               - 'apps/search/**'
@@ -155,6 +161,13 @@ jobs:
     with: { service: platform-core }
     permissions: { contents: read, security-events: write }
 
+  identity:
+    needs: changes
+    if: needs.changes.outputs.identity == 'true'
+    uses: ./.github/workflows/java-service.yml
+    with: { service: identity }
+    permissions: { contents: read, security-events: write }
+
   search:
     needs: changes
     if: needs.changes.outputs.search == 'true'
@@ -187,7 +200,7 @@ jobs:
   ci-ok:
     name: CI OK
     if: always()
-    needs: [base, dependency-review, changes, api-gateway, platform-core, search, conversation-ai, messaging, frontend]
+    needs: [base, dependency-review, changes, api-gateway, platform-core, identity, search, conversation-ai, messaging, frontend]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:

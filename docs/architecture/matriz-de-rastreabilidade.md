@@ -4,7 +4,7 @@
 > sai dela por `bash scripts/rastreabilidade.sh`. Editar aqui é trabalho perdido:
 > a CI regera e compara.
 
-Requisitos do PRD: **104**. Cobertos **3**, parciais **20**, pendentes **81**. Atualizada em 2026-11-05.
+Requisitos do PRD: **104**. Cobertos **5**, parciais **22**, pendentes **77**. Atualizada em 2026-11-05.
 
 A contagem não é nota de desempenho. O produto está no marco M1 e a maior parte dos
 requisitos ainda não tem código — um requisito pendente com nota honesta vale mais do
@@ -29,12 +29,12 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 
 | | Requisito | Prio | Teste | Nota |
 | --- | --- | --- | --- | --- |
-| ○ | **RF-001** Cadastro com credenciais (método a confirmar; PROPOSTA e-mail + senha) | Must | — | Sem implementação ainda; entra no marco M2. |
-| ◐ | **RF-002** Login/logout com access token curto e refresh token rotacionado; limitação de tentativas (brute force) | Must | `LimiteDeTaxaIntegrationTest.java` | Limite de taxa na borda está provado; login, refresh e bloqueio por tentativa são do M2. |
+| ◐ | **RF-001** Cadastro com credenciais (método a confirmar; PROPOSTA e-mail + senha) | Must | `AutenticacaoIntegrationTest.java` | Cadastro com e-mail e senha funciona de ponta a ponta. O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar. |
+| ● | **RF-002** Login/logout com access token curto e refresh token rotacionado; limitação de tentativas (brute force) | Must | `AutenticacaoIntegrationTest.java`<br>`RotacaoConcorrenteIntegrationTest.java`<br>`EmissorDeAcessoTest.java` | Acesso curto, refresh rotacionado com detecção de reuso que derruba a família, e limite de tentativas por conta. A rotação é provada também sob 16 renovações simultâneas. |
 | ○ | **RF-003** Recuperação de acesso | Must | — | Sem implementação ainda; entra no marco M2. |
-| ○ | **RF-004** Perfil do usuário e preferências de viagem | Must | — | Sem implementação ainda; entra no marco M2. |
+| ◐ | **RF-004** Perfil do usuário e preferências de viagem | Must | `AutenticacaoIntegrationTest.java` | Perfil e idioma existem; preferências de viagem, moeda e fuso entram com a AZ-024. |
 | ○ | **RF-005** Vínculo telefone-conta com verificação de posse do número | Must | — | Sem implementação ainda; entra no marco M2. |
-| ◐ | **RF-007** Isolamento: `user_id` vem do token; acesso a recurso de outro usuário é negado | Must | `SegurancaIntegrationTest.java` | A borda já recusa requisição sem token válido. O isolamento por user_id depende do M2; BOLA/IDOR entra com ele. |
+| ◐ | **RF-007** Isolamento: `user_id` vem do token; acesso a recurso de outro usuário é negado | Must | `AutenticacaoIntegrationTest.java`<br>`SegurancaIntegrationTest.java` | O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025. |
 | ○ | **RF-009** Plano Free com franquia de N consultas por período (padrão N=5, **configurável**) | Must | — | Sem implementação ainda; entra no marco M2. |
 | ○ | **RF-010** Saldo único compartilhado entre WhatsApp e Web; sem regras de consumo por canal | Must | — | Sem implementação ainda; entra no marco M2. |
 | ○ | **RF-011** Tipo de período configurável: trimestre-calendário (padrão, HIPÓTESE) ou janela móvel desde o cadastro | Must | — | Sem implementação ainda; entra no marco M2. |
@@ -46,7 +46,7 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 | ○ | **RF-070** Tela de plano e consumo: saldo, período, histórico, assinatura | Must | — | Sem implementação ainda; entra no marco M2. |
 | ○ | **RF-071** Preferências: idioma, moeda, país, fuso e canal de notificação | Must | — | Sem implementação ainda; entra no marco M2. |
 | ◐ | **RF-095** Idioma, moeda, fuso e país tratados separadamente | Must | `i18n.spec.ts` | Idioma é tratado separadamente desde já; moeda, fuso e país entram com o perfil, no M2. |
-| ○ | **RF-099** Aceite versionado e registrado de Termos de Uso e Política de Privacidade no cadastro | Must | — | Sem implementação ainda; entra no marco M2. |
+| ● | **RF-099** Aceite versionado e registrado de Termos de Uso e Política de Privacidade no cadastro | Must | `AutenticacaoIntegrationTest.java` | Aceite de Termos e de Política gravado com versão, data e origem no mesmo ato do cadastro. |
 
 ## M3
 
@@ -122,7 +122,7 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 
 | | Requisito | Prio | Teste | Nota |
 | --- | --- | --- | --- | --- |
-| ○ | **RF-008** Papéis administrativos separados dos planos; MFA obrigatório para admin | Must | — | Sem implementação ainda; entra no marco M6. |
+| ◐ | **RF-008** Papéis administrativos separados dos planos; MFA obrigatório para admin | Must | `AutenticacaoIntegrationTest.java` | Papéis são separados do plano e concedidos, nunca escolhidos no cadastro. MFA de administrador é do M6. |
 | ○ | **RF-020** Múltiplos destinos, conforme cobertura dos provedores | Could | — | Sem implementação ainda; entra no marco M6. |
 | ○ | **RF-021** Datas flexíveis, períodos próximos, aeroportos alternativos e calendário de preços, quando suportados | Should | — | Sem implementação ainda; entra no marco M6. |
 | ○ | **RF-037** Comparação avançada (ex.: períodos próximos) | Could | — | Sem implementação ainda; entra no marco M6. |
@@ -173,11 +173,13 @@ requisito some do radar e que nenhum status exista sem arquivo de teste que o su
 
 ## Caminhos completos dos testes citados
 
-- `apps/api-gateway/src/test/java/br/com/aerozap/apigateway/LimiteDeTaxaIntegrationTest.java`
 - `apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java`
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ConjuntoDouradoTest.java`
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/ExtratorDeDatasTest.java`
 - `apps/conversation-ai/src/test/java/br/com/aerozap/conversationai/interpretacao/GuardaDeInjecaoTest.java`
+- `apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java`
+- `apps/identity/src/test/java/br/com/aerozap/identity/EmissorDeAcessoTest.java`
+- `apps/identity/src/test/java/br/com/aerozap/identity/RotacaoConcorrenteIntegrationTest.java`
 - `apps/platform-core/src/test/java/br/com/aerozap/platformcore/ConsumidorIdempotenteConcorrenciaIntegrationTest.java`
 - `apps/platform-core/src/test/java/br/com/aerozap/platformcore/OutboxConcorrenciaIntegrationTest.java`
 - `apps/platform-core/src/test/java/br/com/aerozap/platformcore/ReservaDeFranquiaConcorrenciaIntegrationTest.java`

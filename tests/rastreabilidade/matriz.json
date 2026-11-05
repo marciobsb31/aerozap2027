@@ -13,20 +13,24 @@
       "titulo": "Cadastro com credenciais (método a confirmar; PROPOSTA e-mail + senha)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Cadastro com e-mail e senha funciona de ponta a ponta. O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar."
     },
     {
       "id": "RF-002",
       "titulo": "Login/logout com access token curto e refresh token rotacionado; limitação de tentativas (brute force)",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PARCIAL",
+      "status": "COBERTO",
       "testes": [
-        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/LimiteDeTaxaIntegrationTest.java"
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java",
+        "apps/identity/src/test/java/br/com/aerozap/identity/RotacaoConcorrenteIntegrationTest.java",
+        "apps/identity/src/test/java/br/com/aerozap/identity/EmissorDeAcessoTest.java"
       ],
-      "nota": "Limite de taxa na borda está provado; login, refresh e bloqueio por tentativa são do M2."
+      "nota": "Acesso curto, refresh rotacionado com detecção de reuso que derruba a família, e limite de tentativas por conta. A rotação é provada também sob 16 renovações simultâneas."
     },
     {
       "id": "RF-003",
@@ -42,9 +46,11 @@
       "titulo": "Perfil do usuário e preferências de viagem",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Perfil e idioma existem; preferências de viagem, moeda e fuso entram com a AZ-024."
     },
     {
       "id": "RF-005",
@@ -71,18 +77,21 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java",
         "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java"
       ],
-      "nota": "A borda já recusa requisição sem token válido. O isolamento por user_id depende do M2; BOLA/IDOR entra com ele."
+      "nota": "O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025."
     },
     {
       "id": "RF-008",
       "titulo": "Papéis administrativos separados dos planos; MFA obrigatório para admin",
       "prioridade": "Must",
       "marco": "M6",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M6."
+      "status": "PARCIAL",
+      "testes": [
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Papéis são separados do plano e concedidos, nunca escolhidos no cadastro. MFA de administrador é do M6."
     },
     {
       "id": "RF-009",
@@ -944,9 +953,11 @@
       "titulo": "Aceite versionado e registrado de Termos de Uso e Política de Privacidade no cadastro",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PENDENTE",
-      "testes": [],
-      "nota": "Sem implementação ainda; entra no marco M2."
+      "status": "COBERTO",
+      "testes": [
+        "apps/identity/src/test/java/br/com/aerozap/identity/AutenticacaoIntegrationTest.java"
+      ],
+      "nota": "Aceite de Termos e de Política gravado com versão, data e origem no mesmo ato do cadastro."
     },
     {
       "id": "RF-100",
