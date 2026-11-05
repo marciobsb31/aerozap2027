@@ -29,7 +29,7 @@ jobs:
           if [ -f frontend/package.json ]; then echo "code=true" >> "$GITHUB_OUTPUT"
           else echo "code=false" >> "$GITHUB_OUTPUT"; echo "::notice::frontend ainda não tem package.json; build pulado"; fi
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.has.outputs.code == 'true'
         with:
           node-version: '26'
