@@ -23,7 +23,7 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     }
 
     private Resposta registrar(String email, String senha) {
-        return postar("/v1/auth/registrar", Map.of(
+        return postar("/api/v1/auth/registrar", Map.of(
                 "email", email, "senha", senha, "nome", "Pessoa de Teste",
                 "idioma", "pt-BR", "versaoDosTermos", "2026-11-01"));
     }
@@ -79,9 +79,9 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
         String email = novoEmail();
         registrar(email, "uma senha longa o bastante");
 
-        Resposta senhaErrada = postar("/v1/auth/entrar",
+        Resposta senhaErrada = postar("/api/v1/auth/entrar",
                 Map.of("email", email, "senha", "senha completamente errada"));
-        Resposta contaInexistente = postar("/v1/auth/entrar",
+        Resposta contaInexistente = postar("/api/v1/auth/entrar",
                 Map.of("email", novoEmail(), "senha", "senha completamente errada"));
 
         // Dizer "este e-mail não existe" entrega ao atacante a lista de quem tem conta.
@@ -98,11 +98,11 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     void rotacaoDoRefresh() {
         String primeiro = registrar(novoEmail(), "uma senha longa o bastante").texto("refreshToken");
 
-        Resposta renovada = postar("/v1/auth/renovar", Map.of("refreshToken", primeiro));
+        Resposta renovada = postar("/api/v1/auth/renovar", Map.of("refreshToken", primeiro));
         assertThat(renovada.status()).isEqualTo(200);
         assertThat(renovada.texto("refreshToken")).isNotEqualTo(primeiro);
 
-        Resposta comOAntigo = postar("/v1/auth/renovar", Map.of("refreshToken", primeiro));
+        Resposta comOAntigo = postar("/api/v1/auth/renovar", Map.of("refreshToken", primeiro));
         assertThat(comOAntigo.status()).isEqualTo(401);
     }
 
@@ -110,13 +110,13 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("reusar um refresh já rotacionado derruba a família inteira de sessões")
     void reusoDerrubaAFamilia() {
         String primeiro = registrar(novoEmail(), "uma senha longa o bastante").texto("refreshToken");
-        String segundo = postar("/v1/auth/renovar", Map.of("refreshToken", primeiro))
+        String segundo = postar("/api/v1/auth/renovar", Map.of("refreshToken", primeiro))
                 .texto("refreshToken");
 
         // Reuso do antigo: ou vazou, ou é repetição. Não dá para distinguir, então cai tudo.
-        postar("/v1/auth/renovar", Map.of("refreshToken", primeiro));
+        postar("/api/v1/auth/renovar", Map.of("refreshToken", primeiro));
 
-        Resposta comOValido = postar("/v1/auth/renovar", Map.of("refreshToken", segundo));
+        Resposta comOValido = postar("/api/v1/auth/renovar", Map.of("refreshToken", segundo));
         assertThat(comOValido.status())
                 .as("o token que ainda era válido também cai: a sessão pode estar comprometida")
                 .isEqualTo(401);
@@ -127,8 +127,8 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     void sair() {
         String refresh = registrar(novoEmail(), "uma senha longa o bastante").texto("refreshToken");
 
-        assertThat(postar("/v1/auth/sair", Map.of("refreshToken", refresh)).status()).isEqualTo(204);
-        assertThat(postar("/v1/auth/renovar", Map.of("refreshToken", refresh)).status())
+        assertThat(postar("/api/v1/auth/sair", Map.of("refreshToken", refresh)).status()).isEqualTo(204);
+        assertThat(postar("/api/v1/auth/renovar", Map.of("refreshToken", refresh)).status())
                 .isEqualTo(401);
     }
 
@@ -137,10 +137,10 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     void perfil() {
         String email = novoEmail();
         registrar(email, "uma senha longa o bastante");
-        Resposta entrada = postar("/v1/auth/entrar",
+        Resposta entrada = postar("/api/v1/auth/entrar",
                 Map.of("email", email, "senha", "uma senha longa o bastante"));
 
-        Resposta perfil = obter("/v1/auth/eu", "X-Usuario-Id", subDoToken(entrada.texto("accessToken")));
+        Resposta perfil = obter("/api/v1/auth/eu", "X-Usuario-Id", subDoToken(entrada.texto("accessToken")));
 
         assertThat(perfil.status()).isEqualTo(200);
         assertThat(perfil.texto("email")).isEqualTo(email);
@@ -157,7 +157,7 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
         registrar(email, "uma senha longa o bastante");
 
         List<Integer> status = java.util.stream.IntStream.rangeClosed(1, 12)
-                .mapToObj(i -> postar("/v1/auth/entrar",
+                .mapToObj(i -> postar("/api/v1/auth/entrar",
                         Map.of("email", email, "senha", "errada errada errada")).status())
                 .toList();
 

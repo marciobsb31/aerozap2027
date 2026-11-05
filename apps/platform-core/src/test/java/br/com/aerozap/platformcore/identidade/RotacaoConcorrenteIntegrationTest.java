@@ -27,7 +27,7 @@ class RotacaoConcorrenteIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("16 renovações simultâneas com o mesmo token: exatamente uma vence")
     void apenasUmaRenovacaoVence() {
-        String refresh = postar("/v1/auth/registrar", Map.of(
+        String refresh = postar("/api/v1/auth/registrar", Map.of(
                 "email", "rotacao-" + System.nanoTime() + "@aerozap-teste.invalid",
                 "senha", "uma senha longa o bastante",
                 "nome", "Pessoa de Teste",
@@ -35,7 +35,7 @@ class RotacaoConcorrenteIntegrationTest extends AbstractIntegrationTest {
                 "versaoDosTermos", "2026-11-01")).texto("refreshToken");
 
         var resultado = ArenaDeConcorrencia.disparar(CONCORRENTES, indice ->
-                postar("/v1/auth/renovar", Map.of("refreshToken", refresh)).status());
+                postar("/api/v1/auth/renovar", Map.of("refreshToken", refresh)).status());
 
         assertThat(resultado.totalDeFalhas())
                 .as("perder a corrida é 401, não exceção. " + resultado.resumo())

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * cliente mandar é a forma mais curta de deixar uma pessoa ler os dados de outra.
  */
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/v1/auth")
 public class AutenticacaoController {
 
     private final ServicoDeContas contas;
