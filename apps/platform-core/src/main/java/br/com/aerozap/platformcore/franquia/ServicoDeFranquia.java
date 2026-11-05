@@ -16,6 +16,7 @@ import br.com.aerozap.foundation.web.ProblemaDeNegocio;
 import br.com.aerozap.platformcore.franquia.RepositorioDeFranquia.Periodo;
 import br.com.aerozap.platformcore.franquia.RepositorioDeFranquia.Plano;
 import br.com.aerozap.platformcore.franquia.RepositorioDeFranquia.Reserva;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.dao.DuplicateKeyException;
@@ -46,9 +47,11 @@ public class ServicoDeFranquia {
     private final PropriedadesDeFranquia propriedades;
     private final OutboxService outbox;
     private final ObjectMapper json;
+    private final Clock relogio;
 
     public ServicoDeFranquia(RepositorioDeFranquia repositorio, PropriedadesDeFranquia propriedades,
-                             OutboxService outbox, ObjectMapper json) {
+                             OutboxService outbox, ObjectMapper json, Clock relogio) {
+        this.relogio = relogio;
         this.repositorio = repositorio;
         this.propriedades = propriedades;
         this.outbox = outbox;
@@ -81,7 +84,7 @@ public class ServicoDeFranquia {
                     "Suas consultas do período acabaram. O saldo volta na próxima renovação.");
         }
 
-        Instant agora = Instant.now();
+        Instant agora = relogio.instant();
         Reserva reserva = new Reserva(UUID.randomUUID(), periodo.id(), usuario, pedido.searchId(),
                 pedido.idempotencyKey(), ReservationStatus.RESERVED, agora,
                 agora.plus(propriedades.expiracaoDaReserva()), null);
@@ -112,7 +115,7 @@ public class ServicoDeFranquia {
         }
         publicar(EventTypes.USAGE_CONFIRMED, reservaId.toString(),
                 new UsageConfirmed(reservaId.toString(), reserva.usuarioId().toString(),
-                        reserva.pesquisaId(), restantesDe(reserva), Instant.now()));
+                        reserva.pesquisaId(), restantesDe(reserva), relogio.instant()));
         return respostaDe(exigirReserva(reservaId));
     }
 
@@ -135,7 +138,7 @@ public class ServicoDeFranquia {
 
         publicar(EventTypes.USAGE_RELEASED, reservaId.toString(),
                 new UsageReleased(reservaId.toString(), reserva.usuarioId().toString(),
-                        reserva.pesquisaId(), motivo, restantesDe(reserva), Instant.now()));
+                        reserva.pesquisaId(), motivo, restantesDe(reserva), relogio.instant()));
         return respostaDe(exigirReserva(reservaId));
     }
 
@@ -167,7 +170,7 @@ public class ServicoDeFranquia {
     }
 
     private Periodo periodoVigente(UUID usuarioId, Instant inicioDaConta) {
-        Instant agora = Instant.now();
+        Instant agora = relogio.instant();
         var existente = repositorio.periodoVigente(usuarioId, agora);
         if (existente.isPresent()) {
             return existente.get();
@@ -210,7 +213,7 @@ public class ServicoDeFranquia {
 
     /** O evento nasce na mesma transação da mudança: ou os dois existem, ou nenhum (Outbox). */
     private void publicar(String tipo, String agregado, Object conteudo) {
-        outbox.append(new EventEnvelope(UUID.randomUUID(), tipo, 1, Instant.now(),
+        outbox.append(new EventEnvelope(UUID.randomUUID(), tipo, 1, relogio.instant(),
                 CorrelationIds.current(), agregado, json.writeValueAsString(conteudo)));
     }
 
