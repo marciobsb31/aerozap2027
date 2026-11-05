@@ -71,11 +71,12 @@ public class RepositorioDeFranquia {
      * usuário chegam juntas na virada — e é assim que tem de ser: quem perde relê o período que a
      * outra criou, em vez de criar um segundo e dobrar a franquia.
      */
-    public Periodo criarPeriodo(UUID usuarioId, String plano, TipoDePeriodo.Janela janela, int franquia) {
+    public Optional<Periodo> criarPeriodo(UUID usuarioId, String plano, TipoDePeriodo.Janela janela, int franquia) {
         UUID id = UUID.randomUUID();
-        jdbc.sql("""
+        int criados = jdbc.sql("""
                 insert into franquia.periodo_de_uso (id, usuario_id, plano_codigo, inicio, fim, franquia)
                 values (:id, :usuario, :plano, :inicio, :fim, :franquia)
+                on conflict (usuario_id, inicio) do nothing
                 """)
                 .param("id", id)
                 .param("usuario", usuarioId)
@@ -84,7 +85,9 @@ public class RepositorioDeFranquia {
                 .param("fim", OffsetDateTime.ofInstant(janela.fim(), ZoneOffset.UTC))
                 .param("franquia", franquia)
                 .update();
-        return new Periodo(id, usuarioId, plano, janela.inicio(), janela.fim(), franquia, 0);
+        return criados == 0
+                ? Optional.empty()
+                : Optional.of(new Periodo(id, usuarioId, plano, janela.inicio(), janela.fim(), franquia, 0));
     }
 
     /**

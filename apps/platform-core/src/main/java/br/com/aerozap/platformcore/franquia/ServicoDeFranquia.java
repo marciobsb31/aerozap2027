@@ -180,13 +180,13 @@ public class ServicoDeFranquia {
                 ? propriedades.tipoDePeriodo() : plano.tipoDePeriodo();
         var janela = tipo.janelaDe(agora, inicioDaConta, propriedades.fuso());
 
-        try {
-            return repositorio.criarPeriodo(usuarioId, plano.codigo(), janela, plano.consultas());
-        } catch (DuplicateKeyException e) {
-            // Duas primeiras consultas simultâneas na virada: quem perde relê o período que a
-            // outra criou. Criar um segundo dobraria a franquia do trimestre.
-            return repositorio.periodoVigente(usuarioId, agora).orElseThrow(() -> e);
-        }
+        // Duas primeiras consultas simultâneas na virada: quem perde relê o período que a outra
+        // criou. Criar um segundo dobraria a franquia do trimestre. O conflito é resolvido no
+        // INSERT porque uma violação de restrição abortaria a transação e impediria essa releitura.
+        return repositorio.criarPeriodo(usuarioId, plano.codigo(), janela, plano.consultas())
+                .or(() -> repositorio.periodoVigente(usuarioId, agora))
+                .orElseThrow(() -> new IllegalStateException(
+                        "Período em conflito não encontrado para a janela vigente"));
     }
 
     private Reserva exigirReserva(UUID reservaId) {
