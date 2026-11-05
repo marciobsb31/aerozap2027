@@ -26,7 +26,7 @@ class EncaminhamentoIntegrationTest extends AbstractGatewayIntegrationTest {
     static {
         try {
             SERVICO_DE_TESTE = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-            SERVICO_DE_TESTE.createContext("/api/teste", EncaminhamentoIntegrationTest::responder);
+            SERVICO_DE_TESTE.createContext("/", EncaminhamentoIntegrationTest::responder);
             SERVICO_DE_TESTE.setExecutor(Executors.newFixedThreadPool(4));
             SERVICO_DE_TESTE.start();
         } catch (IOException e) {
@@ -51,6 +51,7 @@ class EncaminhamentoIntegrationTest extends AbstractGatewayIntegrationTest {
                 + " correlacao=" + String.valueOf(troca.getRequestHeaders().getFirst("X-Correlation-Id"))
                 + " encaminhado-por=" + String.valueOf(troca.getRequestHeaders().getFirst("X-Forwarded-For"))
                 + " autorizacao=" + (troca.getRequestHeaders().getFirst("Authorization") != null)
+                + " usuario=" + troca.getRequestHeaders().get("X-Usuario-Id")
                 + " corpo=" + new String(corpoRecebido, StandardCharsets.UTF_8);
 
         int status = caminho.endsWith("/erro") ? 418 : 200;
@@ -68,6 +69,9 @@ class EncaminhamentoIntegrationTest extends AbstractGatewayIntegrationTest {
         registro.add("aerozap.gateway.rotas[0].prefixo", () -> "/api/teste");
         registro.add("aerozap.gateway.rotas[0].destino",
                 () -> "http://127.0.0.1:" + SERVICO_DE_TESTE.getAddress().getPort() + "/api/teste");
+        registro.add("aerozap.gateway.rotas[1].prefixo", () -> "/api/plataforma");
+        registro.add("aerozap.gateway.rotas[1].destino",
+                () -> "http://127.0.0.1:" + SERVICO_DE_TESTE.getAddress().getPort() + "/api");
         registro.add("aerozap.gateway.tempos-limite.leitura", () -> "600ms");
     }
 
@@ -117,5 +121,58 @@ class EncaminhamentoIntegrationTest extends AbstractGatewayIntegrationTest {
     @DisplayName("caminho sem rota configurada: 404")
     void caminhoSemRotaDa404() throws Exception {
         assertThat(get("/api/outra-coisa/x", tokenValido()).statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("quem o serviço enxerga vem do token, nunca de um cabeçalho do cliente (RF-007)")
+    void usuarioVemDoToken() throws Exception {
+        var semForjar = get("/api/teste/eco", tokenValido());
+        assertThat(semForjar.body()).contains("usuario=[usuario-de-teste]");
+
+        var forjando = get("/api/teste/eco", tokenValido(), "X-Usuario-Id", "id-da-vitima");
+        assertThat(forjando.body())
+                .contains("usuario=[usuario-de-teste]")
+                .doesNotContain("id-da-vitima");
+
+        var emMinusculas = get("/api/teste/eco", tokenValido(), "x-usuario-id", "id-da-vitima");
+        assertThat(emMinusculas.body()).doesNotContain("id-da-vitima");
+    }
+
+    @Test
+    @DisplayName("entrar, registrar, renovar e sair passam sem token, e sem carregar identidade forjada")
+    void entradasDispensamToken() throws Exception {
+        for (String acao : java.util.List.of("registrar", "entrar", "renovar", "sair")) {
+            var resposta = chamar("POST", "/api/plataforma/v1/auth/" + acao, null, "{}",
+                    "X-Usuario-Id", "id-da-vitima");
+
+            assertThat(resposta.statusCode()).as(acao).isEqualTo(200);
+            assertThat(resposta.body())
+                    .contains("caminho=/api/v1/auth/" + acao)
+                    .contains("usuario=null");
+        }
+    }
+
+    @Test
+    @DisplayName("o resto da autenticação continua exigindo token")
+    void restoDaAutenticacaoExigeToken() throws Exception {
+        assertThat(get("/api/plataforma/v1/auth/eu", null).statusCode()).isEqualTo(401);
+        assertThat(get("/api/plataforma/v1/auth/entrar", null).statusCode())
+                .as("só o POST é aberto").isEqualTo(401);
+    }
+
+    @Test
+    @DisplayName("rotas internas não são alcançáveis pela borda, nem saindo do caminho")
+    void internoForaDeAlcance() throws Exception {
+        for (String tentativa : java.util.List.of(
+                "/internal/usage/saldo",
+                "/api/plataforma/../../internal/usage/saldo",
+                "/api/plataforma/%2e%2e/%2e%2e/internal/usage/saldo",
+                "/api/plataforma/..%2f..%2finternal/usage/saldo",
+                "/api/plataforma//../internal/usage/saldo")) {
+            var resposta = get(tentativa, tokenValido());
+
+            assertThat(resposta.statusCode()).as(tentativa).isBetween(400, 499);
+            assertThat(resposta.body()).as(tentativa).doesNotContain("metodo=");
+        }
     }
 }
