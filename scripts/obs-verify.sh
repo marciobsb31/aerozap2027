@@ -73,8 +73,7 @@ tenta(){
   if echo "$ROTULOS" | grep -q 'platform-core'; then
     ok "há logs do platform-core no Loki"
   else
-    echo "• Ainda não há logs do platform-core. Rode o serviço com o perfil observabilidade:"
-    echo "    SPRING_PROFILES_ACTIVE=observabilidade bash scripts/dev-service-check.sh"
+    falhou "sem logs do platform-core no Loki. Rode: SPRING_PROFILES_ACTIVE=observabilidade bash scripts/dev-service-check.sh"
   fi
 
   echo
@@ -82,7 +81,7 @@ tenta(){
   if tenta "http://localhost:${TEMPO}/api/search/tags" | grep -q 'service.name'; then
     ok "há rastros no Tempo (service.name já conhecido)"
   else
-    echo "• Ainda não há rastros. Faça uma requisição ao serviço com o perfil observabilidade ativo."
+    falhou "sem rastros no Tempo. Rode: SPRING_PROFILES_ACTIVE=observabilidade bash scripts/dev-service-check.sh"
   fi
 
   echo

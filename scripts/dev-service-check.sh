@@ -8,7 +8,12 @@ mkdir -p logs
   echo "=== dev-service-check — $(date -Iseconds) ==="
   bash scripts/dev-up.sh || { echo "✗ infraestrutura não subiu"; exit 1; }
 
+  # O perfil pedido na linha de comando soma aos do .env; sem isto, o .env o sobrescreveria.
+  PERFIL_PEDIDO="${SPRING_PROFILES_ACTIVE:-}"
   set -a; . ./.env; set +a
+  if [ -n "$PERFIL_PEDIDO" ]; then
+    export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:+$SPRING_PROFILES_ACTIVE,}$PERFIL_PEDIDO"
+  fi
   # shellcheck source=scripts/lib/java-env.sh
   . scripts/lib/java-env.sh
   configurar_java || exit 1
@@ -37,5 +42,12 @@ mkdir -p logs
   echo "• /api/v1/system/ping:"; curl -fsS -H "X-Correlation-Id: verificacao-1" "http://localhost:$PORT/api/v1/system/ping"; echo
   echo "• /v3/api-docs (início):"; curl -fsS "http://localhost:$PORT/v3/api-docs" | head -c 200; echo
   echo "✓ platform-core saudável com PostgreSQL e RabbitMQ reais."
+  case ",${SPRING_PROFILES_ACTIVE:-}," in
+    *,observabilidade,*)
+      # Dá tempo de o Prometheus coletar e de o lote de logs e rastros sair antes de encerrar.
+      echo "• Aguardando 30 s para os sinais chegarem à observabilidade..."
+      sleep 30
+      ;;
+  esac
 } 2>&1 | tee logs/dev-service-check.log
 exit "${PIPESTATUS[0]}"
