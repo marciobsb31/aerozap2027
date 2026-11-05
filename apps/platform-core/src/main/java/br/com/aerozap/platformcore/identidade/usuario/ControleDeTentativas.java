@@ -52,19 +52,19 @@ public class ControleDeTentativas {
                 values (:chave, 1, now())
                 on conflict (chave) do update set
                     tentativas = case
-                        when tentativa_de_entrada.janela_abre < now() - :janela then 1
+                        when tentativa_de_entrada.janela_abre < now() - make_interval(secs => :janela) then 1
                         else tentativa_de_entrada.tentativas + 1 end,
                     janela_abre = case
-                        when tentativa_de_entrada.janela_abre < now() - :janela then now()
+                        when tentativa_de_entrada.janela_abre < now() - make_interval(secs => :janela) then now()
                         else tentativa_de_entrada.janela_abre end,
                     bloqueado_ate = case
-                        when tentativa_de_entrada.tentativas + 1 >= :limite then now() + :bloqueio
+                        when tentativa_de_entrada.tentativas + 1 >= :limite then now() + make_interval(secs => :bloqueio)
                         else tentativa_de_entrada.bloqueado_ate end
                 """)
                 .param("chave", chave)
-                .param("janela", JANELA)
+                .param("janela", JANELA.toSeconds())
                 .param("limite", LIMITE)
-                .param("bloqueio", BLOQUEIO)
+                .param("bloqueio", BLOQUEIO.toSeconds())
                 .update();
     }
 

@@ -65,11 +65,11 @@ class AutenticacaoIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("senha curta é recusada com 422, não com 500")
+    @DisplayName("senha curta é recusada com 400, como manda o catálogo de erros")
     void senhaCurta() {
         Resposta resposta = registrar(novoEmail(), "curta");
 
-        assertThat(resposta.status()).isEqualTo(422);
+        assertThat(resposta.status()).isEqualTo(400);
         assertThat(resposta.corpo().get("type")).isEqualTo("urn:aerozap:problem:validation");
     }
 
