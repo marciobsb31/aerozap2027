@@ -25,6 +25,9 @@
     <archunit.version>1.4.1</archunit.version>
     <springdoc.version>3.0.0</springdoc.version>
     <loki4j.version>2.1.0</loki4j.version>
+    <!-- O Spring Boot 4.1.2 traz a 5.30.0, com vulnerabilidades de gravidade alta (GHSA-93j5-89vc-pph4 e outras).
+         Corrigidas a partir da 5.34.0. Retire esta linha quando o Spring Boot trouxer versão corrigida. -->
+    <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
   </properties>
 
   <modules>
