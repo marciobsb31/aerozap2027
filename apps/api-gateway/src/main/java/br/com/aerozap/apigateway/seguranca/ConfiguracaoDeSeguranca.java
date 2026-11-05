@@ -7,6 +7,7 @@ import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,12 @@ public class ConfiguracaoDeSeguranca {
         "/v3/api-docs", "/v3/api-docs/**",
     };
 
+    /** Quem ainda não tem token, ou está com ele vencido, precisa destes para conseguir um. */
+    static final String[] ENTRADAS_SEM_TOKEN = {
+        "/api/plataforma/v1/auth/registrar", "/api/plataforma/v1/auth/entrar",
+        "/api/plataforma/v1/auth/renovar", "/api/plataforma/v1/auth/sair",
+    };
+
     @Bean
     SecurityFilterChain cadeiaDeFiltros(HttpSecurity http, ObjectMapper json) throws Exception {
         return http
@@ -50,6 +57,7 @@ public class ConfiguracaoDeSeguranca {
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(CAMINHOS_PUBLICOS).permitAll()
+                        .requestMatchers(HttpMethod.POST, ENTRADAS_SEM_TOKEN).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(Customizer.withDefaults())

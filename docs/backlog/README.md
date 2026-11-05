@@ -50,7 +50,7 @@ Regra: no máximo duas tarefas `IN_PROGRESS` por agente. Atualize o estado aqui 
 | AZ-022 | Entitlement: planos, `usage_period`, `usage_event`, **reserva → confirmação/liberação** (ADR), idempotência, reserva órfã expirada | A1 | AZ-020 | REVIEW | [AZ-022](tasks/AZ-022.md) |
 | AZ-023 | Planos e preços **configuráveis** (sem valor fixo no código) | A1 | AZ-022 | READY | [AZ-023](tasks/AZ-023.md) |
 | AZ-024 | Web: cadastro, login, perfil, preferências de idioma, saldo e consumo | A2 | AZ-016, AZ-020 | READY | [AZ-024](tasks/AZ-024.md) |
-| AZ-025 | Testes: concorrência da última consulta, repetição, virada de trimestre, isolamento entre usuários (BOLA), token expirado | A7 | AZ-022 | READY | [AZ-025](tasks/AZ-025.md) |
+| AZ-025 | Testes: concorrência da última consulta, repetição, virada de trimestre, isolamento entre usuários (BOLA), token expirado | A7 | AZ-022 | REVIEW | [AZ-025](tasks/AZ-025.md) |
 
 ## Fase 3 — Pesquisa (marco M3)
 

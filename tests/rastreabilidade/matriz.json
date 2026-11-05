@@ -15,9 +15,10 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
+        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/EncaminhamentoIntegrationTest.java",
         "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
-      "nota": "Cadastro com e-mail e senha funciona de ponta a ponta. O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar."
+      "nota": "Cadastro com e-mail e senha funciona de ponta a ponta pela borda (scripts/dev-isolamento-check.sh). O método continua PROPOSTA no PRD; está isolado em configuração para não virar migração se mudar."
     },
     {
       "id": "RF-002",
@@ -75,12 +76,14 @@
       "titulo": "Isolamento: `user_id` vem do token; acesso a recurso de outro usuário é negado",
       "prioridade": "Must",
       "marco": "M2",
-      "status": "PARCIAL",
+      "status": "COBERTO",
       "testes": [
-        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java",
-        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java"
+        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/EncaminhamentoIntegrationTest.java",
+        "apps/api-gateway/src/test/java/br/com/aerozap/apigateway/SegurancaIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/IsolamentoEntreUsuariosIntegrationTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/identidade/AutenticacaoIntegrationTest.java"
       ],
-      "nota": "O identificador vem do cabeçalho posto pelo gateway, nunca do corpo. O teste de acesso cruzado entre dois usuários é da AZ-025."
+      "nota": "A borda descarta o X-Usuario-Id do cliente e o preenche a partir do token. Acesso cruzado provado com dois usuários reais em scripts/dev-isolamento-check.sh. O histórico entra no M3, com o teste junto. O serviço ainda confia na borda: isolar a rede é condição da AZ-083."
     },
     {
       "id": "RF-008",
@@ -122,9 +125,10 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
-        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/TipoDePeriodoTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/TipoDePeriodoTest.java",
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ViradaDePeriodoIntegrationTest.java"
       ],
-      "nota": "Trimestre-calendário e janela móvel implementados e testados nas bordas da virada. A janela móvel precisa da data de cadastro, que depende da API interna da identidade."
+      "nota": "Trimestre-calendário provado atravessando a virada com o relógio andando. A janela móvel está implementada e testada nas bordas, mas precisa da data de cadastro, que o módulo da franquia ainda não recebe."
     },
     {
       "id": "RF-012",
@@ -145,8 +149,9 @@
       "marco": "M2",
       "status": "COBERTO",
       "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ExpiracaoDeReservasIntegrationTest.java",
         "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaConcorrenciaIntegrationTest.java",
-        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ExpiracaoDeReservasIntegrationTest.java"
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/ViradaDePeriodoIntegrationTest.java"
       ],
       "nota": "Reserva, confirmação e liberação; falha não consome; reserva órfã volta sozinha e não credita duas vezes. A última consulta disputada por 32 requisições autoriza uma."
     },
@@ -168,9 +173,10 @@
       "marco": "M2",
       "status": "PARCIAL",
       "testes": [
+        "apps/platform-core/src/test/java/br/com/aerozap/platformcore/IsolamentoEntreUsuariosIntegrationTest.java",
         "apps/platform-core/src/test/java/br/com/aerozap/platformcore/franquia/FranquiaIntegrationTest.java"
       ],
-      "nota": "Saldo e período consultáveis pela API interna; a tela é da AZ-024 e o histórico de consumo, do M6."
+      "nota": "Saldo e período consultáveis pela borda em /api/v1/usage/saldo; a tela é da AZ-024 e o histórico de consumo, do M6."
     },
     {
       "id": "RF-016",

@@ -1,7 +1,7 @@
 package br.com.aerozap.platformcore.franquia;
 
 import br.com.aerozap.contracts.usage.ReleaseReason;
-import java.time.Instant;
+import java.time.Clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,15 +26,17 @@ public class ExpiradorDeReservas {
 
     private final RepositorioDeFranquia repositorio;
     private final ServicoDeFranquia servico;
+    private final Clock relogio;
 
-    public ExpiradorDeReservas(RepositorioDeFranquia repositorio, ServicoDeFranquia servico) {
+    public ExpiradorDeReservas(RepositorioDeFranquia repositorio, ServicoDeFranquia servico, Clock relogio) {
         this.repositorio = repositorio;
         this.servico = servico;
+        this.relogio = relogio;
     }
 
     @Scheduled(fixedDelayString = "${aerozap.franquia.intervalo-de-expiracao-ms:60000}")
     public void liberarVencidas() {
-        var vencidas = repositorio.reservasVencidas(Instant.now(), LOTE);
+        var vencidas = repositorio.reservasVencidas(relogio.instant(), LOTE);
         if (vencidas.isEmpty()) {
             return;
         }

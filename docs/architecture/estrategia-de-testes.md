@@ -216,10 +216,11 @@ Honestidade sobre os buracos, para que ninguém os descubra achando que estavam 
 
 - **E2E e carga não existem ainda.** `tests/e2e` e `tests/load` estão vazios; entram com as
   jornadas, a partir do M3. Carga precisa de ambiente parecido com produção, que é do M8.
-- **Isolamento entre usuários (BOLA/IDOR) não tem teste** porque ainda não há usuário. É o primeiro
-  teste de segurança a escrever no M2, e o mais importante deles.
+- **Isolamento entre usuários (BOLA/IDOR)** é provado com dois usuários reais em
+  `scripts/dev-isolamento-check.sh`, que roda na máquina do desenvolvedor. Na CI, a regra está coberta em
+  duas metades: no gateway e no `platform-core`. Precisa crescer junto com cada rota nova.
 - **Contraste de cor** não é verificado por máquina: o jsdom não calcula layout. Conferido à vista
   nos tokens.
-- **Testes de recuperação** (worker reiniciado no meio do processamento, reserva órfã liberada)
-  precisam de worker, que é do M2.
+- **Testes de recuperação:** a reserva órfã está coberta. O worker reiniciado no meio de uma pesquisa
+  real precisa da pesquisa, que é do M3.
 - **Varredura de imagem** (Trivy) entra com o primeiro Dockerfile.

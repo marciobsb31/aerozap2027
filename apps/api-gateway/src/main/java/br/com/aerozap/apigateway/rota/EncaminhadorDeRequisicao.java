@@ -12,6 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * <p>Repassa método, caminho, parâmetros, cabeçalhos e corpo, acrescenta o identificador de
  * correlação e devolve a resposta como veio. Não interpreta o conteúdo: o gateway não conhece os
  * contratos dos serviços, e é isso que permite mudar um serviço sem mexer na borda.
+ *
+ * <p>A única identidade que os serviços recebem é a do token validado aqui. Um {@code X-Usuario-Id}
+ * vindo do cliente é descartado: repassá-lo deixaria qualquer pessoa ler os dados de outra (RF-007).
  */
 @RestController
 public class EncaminhadorDeRequisicao {
@@ -36,6 +41,9 @@ public class EncaminhadorDeRequisicao {
     private static final Set<String> CABECALHOS_DA_CONEXAO = Set.of(
             "connection", "keep-alive", "proxy-authenticate", "proxy-authorization", "te",
             "trailer", "transfer-encoding", "upgrade", "host", "content-length", "expect");
+
+    /** Quem está pedindo, para os serviços. Só a borda escreve este cabeçalho. */
+    private static final String CABECALHO_DO_USUARIO = "X-Usuario-Id";
 
     private final RestClient cliente;
     private final PropriedadesDeRotas rotas;
@@ -88,10 +96,14 @@ public class EncaminhadorDeRequisicao {
 
     private void copiarCabecalhos(HttpServletRequest requisicao, HttpHeaders destino) {
         for (String nome : Collections.list(requisicao.getHeaderNames())) {
-            if (CABECALHOS_DA_CONEXAO.contains(nome.toLowerCase(java.util.Locale.ROOT))) {
+            if (CABECALHOS_DA_CONEXAO.contains(nome.toLowerCase(java.util.Locale.ROOT))
+                    || CABECALHO_DO_USUARIO.equalsIgnoreCase(nome)) {
                 continue;
             }
             destino.addAll(nome, Collections.list(requisicao.getHeaders(nome)));
+        }
+        if (SecurityContextHolder.getContext().getAuthentication() instanceof JwtAuthenticationToken token) {
+            destino.set(CABECALHO_DO_USUARIO, token.getToken().getSubject());
         }
         destino.set(CorrelationIds.HEADER, CorrelationIds.current());
         destino.set("X-Forwarded-For", requisicao.getRemoteAddr());

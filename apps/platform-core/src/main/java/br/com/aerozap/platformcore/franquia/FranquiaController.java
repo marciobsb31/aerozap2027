@@ -70,7 +70,7 @@ public class FranquiaController {
      * mas não selecionada. Trocar a configuração sem essa API daria períodos errados, e é melhor
      * que isso esteja escrito aqui do que descoberto depois.
      */
-    private Instant inicioDaConta() {
+    static Instant inicioDaConta() {
         return Instant.EPOCH;
     }
 }
