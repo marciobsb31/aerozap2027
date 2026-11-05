@@ -71,6 +71,13 @@
       <artifactId>testcontainers-rabbitmq</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Harness de concorrência e dados sintéticos (AZ-018). Escopo de teste: não entra no jar. -->
+    <dependency>
+      <groupId>br.com.aerozap</groupId>
+      <artifactId>harness-de-concorrencia</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.tngtech.archunit</groupId>
       <artifactId>archunit-junit5</artifactId>
