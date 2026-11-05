@@ -47,6 +47,22 @@
       <artifactId>spring-boot-starter-amqp</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <!-- Só a parte de criptografia do Spring Security: hash de senha e comparação em tempo
+         constante. O serviço não tem cadeia de filtros; quem autentica a requisição é o gateway. -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-crypto</artifactId>
+    </dependency>
+    <!-- Emissão de JWT assinado (HS256), o mesmo formato que o gateway já valida. -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
     </dependency>
